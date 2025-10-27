@@ -7,10 +7,10 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Data for the department chart
 const departmentData = [
-  { department: "Development", value: 45, color: "#3B82F6" },
-  { department: "QA", value: 20, color: "#10B981" },
-  { department: "Production", value: 25, color: "#F59E0B" },
-  { department: "Sales", value: 10, color: "#8B5CF6" }
+  { department: "Development", value: 45, color: "#448DF4" },
+  { department: "QA", value: 20, color: "#43DE93" },
+  { department: "Production", value: 25, color: "#FFD600" },
+  { department: "Sales", value: 10, color: "#7136D0" }
 ];
 
 const DepartmentVisits = () => {
@@ -22,7 +22,7 @@ const DepartmentVisits = () => {
             data: departmentData.map(item => item.value),
             backgroundColor: departmentData.map(item => item.color),
             borderWidth: 0,
-            cutout: '60%'
+            cutout: '70%' // Adjusted cutout to match the image
         }]
     };
 
@@ -47,40 +47,44 @@ const DepartmentVisits = () => {
         }
     };
 
+    // Calculate total sales for the center label
+    const totalSales = departmentData.find(item => item.department === "Sales")?.value || 0;
+
     return (
-        <aside className="right-sidebar">
-            <div className="department-section">
-                <h3 className="section-title">Department Visits</h3>
-                <div className="toggle-buttons">
+        <div className="department-visits-card">
+            <div className="department-visits-header">
+                <h2 className="department-visits-title">Department Visits</h2>
+                <div className="department-visits-buttons">
                     <button
-                        className={`toggle-btn ${activePeriod === 'weekly' ? 'active' : ''}`}
+                        className={`department-visits-button ${activePeriod === 'weekly' ? 'active' : ''}`}
                         onClick={() => setActivePeriod('weekly')}
                     >
                         Weekly
                     </button>
                     <button
-                        className={`toggle-btn ${activePeriod === 'monthly' ? 'active' : ''}`}
+                        className={`department-visits-button ${activePeriod === 'monthly' ? 'active' : ''}`}
                         onClick={() => setActivePeriod('monthly')}
                     >
                         Monthly
                     </button>
                 </div>
-                <div className="chart-container">
-                    <Doughnut data={chartData} options={chartOptions} />
-                </div>
-                <div className="chart-legend">
-                    {departmentData.map(item => (
-                        <div className="legend-item" key={item.department}>
-                            <div className="legend-label">
-                                <div className="legend-color" style={{ backgroundColor: item.color }}></div>
-                                <span className="legend-text">{item.department}</span>
-                            </div>
-                            <span className="legend-value">{item.value}</span>
-                        </div>
-                    ))}
+            </div>
+            <div className="department-visits-chart-container">
+                <Doughnut data={chartData} options={chartOptions} />
+                <div className="department-visits-center-label">
+                    <span className="department-visits-center-value">{totalSales}</span>
+                    <span className="department-visits-center-text">Sales</span>
                 </div>
             </div>
-        </aside>
+            <div className="department-visits-legend">
+                {departmentData.map(item => (
+                    <div className="legend-item" key={item.department}>
+                        <span className="legend-color-box" style={{ backgroundColor: item.color }}></span>
+                        <span>{item.department}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 };
 

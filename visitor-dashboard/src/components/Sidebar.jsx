@@ -1,33 +1,54 @@
-import { FaEnvelope, FaUserShield, FaUsersCog, FaCog, FaHome } from "react-icons/fa";
+import React from 'react';
+import { Home, Mail, Users, Shield, Settings, Menu } from 'lucide-react';
 
-export default function Sidebar() {
+const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+
   return (
-    <div className="bg-custom-blue text-white w-64 min-h-screen flex flex-col p-4">
-      {/* Brand name */}
-      <h1 className="text-2xl font-semibold mb-8">ESTMAC</h1>
-
-      {/* Navigation links */}
-      <nav className="space-y-3 flex-1">
-        <a href="#" className="flex items-center gap-3 p-2 text-custom-blue rounded-md bg-white font-semibold">
-          <FaHome /> Dashboard
-        </a>
-        <a href="#" className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-md">
-          <FaEnvelope /> Inbox
-        </a>
-        <a href="#" className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-md">
-          <FaUsersCog /> Manage Visitors
-        </a>
-        <a href="#" className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-md">
-          <FaUserShield /> Security
-        </a>
-      </nav>
-
-      {/* Settings at bottom */}
-      <div className="mt-auto">
-        <a href="#" className="flex items-center gap-3 p-2 hover:bg-white/20 rounded-md">
-          <FaCog /> Settings
-        </a>
+    <>
+      <button className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-blue-600 text-white" onClick={toggleSidebar}>
+        <Menu size={24} />
+      </button>
+      <div className={`sidebar ${isSidebarOpen ? 'open' : 'hidden-mobile'} md:relative`}>
+        <div className="logo flex items-center justify-center gap-2 mb-10 text-white">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-gauge">
+            <path d="M12 14v4"/>
+            <path d="M3.34 19.06a8.5 8.5 0 0 0 14.37 2.14L21 16"/>
+            <path d="M2.28 6.93l1.83 1.83"/>
+            <path d="M6.39 3.43l-.55 1.76"/>
+            <path d="M10.26 2.12L12 4"/>
+            <path d="M16.95 2.27l-.93 1.8"/>
+            <path d="M21.07 6.09l-1.83 1.83"/>
+            <path d="M22 12h-2"/>
+          </svg>
+          ESTMAC
+        </div>
+        <nav className="flex-1">
+          <ul className="space-y-2">
+            <li className="nav-item active">
+              <Home size={20} />
+              <span>Dashboard</span>
+            </li>
+            <li className="nav-item">
+              <Mail size={20} />
+              <span>Inbox</span>
+            </li>
+            <li className="nav-item">
+              <Users size={20} />
+              <span>Manage Visitors</span>
+            </li>
+            <li className="nav-item">
+              <Shield size={20} />
+              <span>Security</span>
+            </li>
+          </ul>
+        </nav>
+        <div className="settings nav-item">
+          <Settings size={20} />
+          <span>Settings</span>
+        </div>
       </div>
-    </div>
+    </>
   );
-}
+};
+
+export default Sidebar;
