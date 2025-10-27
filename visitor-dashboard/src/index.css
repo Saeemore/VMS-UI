@@ -123,7 +123,7 @@ body {
  */
 .dashboard-container {
   max-width: 100%;
-  margin: 0 auto;
+  margin: 0 3%;
   padding: 16px; /* Added padding */
 }
 
@@ -151,6 +151,24 @@ body {
   align-items: center;
   margin-bottom:var(--space-16);
 }
+.main-header {
+  /* margin: 0 2rem; */
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom:var(--space-16);
+}
+
+.main-header h2{
+  font-size: 32px;
+  font-weight: 600;
+  
+}
+.main-header h4{
+  font-size: 16px;
+  font-weight: 500;
+  
+}
 
 .stats-grid {
   display: grid;
@@ -167,7 +185,7 @@ body {
 
 .stat-card {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
   color: #333;
   display: flex;
@@ -176,8 +194,11 @@ body {
   justify-content: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   min-width: 120px;
+  border: 1px #474555 solid ;
 }
-
+.stat-content{
+  width: 100%;
+}
 .stat-card-count {
   font-size: 36px;
   font-weight: bold;
@@ -200,6 +221,7 @@ body {
   border: none;
   padding: 0;
   cursor: pointer;
+  
 }
 
 .stat-card:hover {
@@ -221,7 +243,7 @@ body {
   margin-bottom: var(--space-12);
 }
 
-.stat-content .stat-link {
+.stat-content .stat-card-details {
   color: var(--dashboard-primary);
   text-decoration: none;
   font-size: var(--font-size-sm);
@@ -229,7 +251,7 @@ body {
   margin-left: 70%;
 }
 
-.stat-content .stat-link:hover {
+.stat-content ..stat-card-details:hover {
   text-decoration: underline;
 }
 

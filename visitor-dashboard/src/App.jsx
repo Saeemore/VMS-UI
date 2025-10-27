@@ -6,7 +6,7 @@ import HeaderStats from './components/HeaderStats';
 import Activities from './components/Activities';
 import VisitorHistory from './components/VisitorHistory';
 import DepartmentVisits from './components/DepartmentVisits';
-
+import Header from './components/Header';
 const activitiesData = [
   { text: "Ridiculus tempus vitae lectus blandit vulputate dolor integer natoque augue.", timeAgo: "7 days ago", icon: "&#128172;" }, // Speech Balloon
   { text: "Scelerisque ultrices tellus tellus sed mattis egestas purus ut vel.", timeAgo: "7 days ago", icon: "&#128100;" }, // Bust in Silhouette
@@ -66,6 +66,7 @@ function App() {
       {/* Main content area that grows to fill the space */}
       <main className={`flex-1 p-4 md:p-8 ${isSidebarOpen ? 'main-content-shifted' : ''}`}>
         <div className="dashboard-container">
+        <Header />
           <HeaderStats />
           <div className="main-layout">
             <VisitorHistory visitors={filteredVisitors} onSearch={setSearchTerm} />
