@@ -69,8 +69,8 @@ function App() {
           <HeaderStats />
           <div className="main-layout">
             <VisitorHistory visitors={filteredVisitors} onSearch={setSearchTerm} />
-            <Activities activitiesData={activitiesData} />
-            <DepartmentVisits />
+            {/* <Activities activitiesData={activitiesData} /> */}
+            {/* <DepartmentVisits /> */}
           </div>
         </div>
       </main>
