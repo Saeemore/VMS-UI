@@ -10,14 +10,14 @@ const visitorStats = [
 
 const HeaderStats = () => {
   return (
-    <header className="stats-header">
-      <div className="stats-grid">
+    <header className="stats-header max-w-6xl mx-auto">
+      <div className="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {visitorStats.map((stat) => (
-          <div className="stat-card" data-stat={stat.key} key={stat.key}>
-            <div className="stat-content">
-              <h3 className="stat-title">{stat.title}</h3>
-              <div className="stat-value">{stat.count}</div>
-              <a href="#" className="stat-link" onClick={(e) => e.preventDefault()}>View Details</a>
+          <div className="stat-card bg-white rounded-lg shadow-md p-6"  data-stat={stat.key} key={stat.key}>
+            <div className="stat-content" >
+              <h3 className="stat-title font-normal text-base leading-none tracking-normal text-gray-500 mb-2 uppercase">{stat.title}</h3>
+              <div className="stat-value font-bold text-4xl leading-none tracking-normal text-gray-900 mb-4">{stat.count}</div>
+              <a href="#" className="stat-link font-normal text-sm leading-none tracking-normal text-blue-600 hover:underline" onClick={(e) => e.preventDefault()}>View Details</a>
             </div>
           </div>
         ))}

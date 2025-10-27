@@ -125,7 +125,7 @@ body {
 
 .main-layout {
   display: grid;
-  grid-template-columns: 280px 1fr 300px;
+  grid-template-columns:  1fr;
   gap: var(--space-32);
   align-items: start;
 }
@@ -135,6 +135,12 @@ body {
  */
 .stats-header {
   margin-bottom: var(--space-32);
+}
+.section-header {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom:var(--space-16);
 }
 
 .stats-grid {

@@ -54,9 +54,9 @@ function App() {
         <div className="dashboard-container">
           <HeaderStats />
           <div className="main-layout">
-            <Activities />
+            
             <VisitorHistory visitors={filteredVisitors} onSearch={setSearchTerm} />
-            <DepartmentVisits />
+       
           </div>
         </div>
       </main>

@@ -31,8 +31,8 @@ const VisitorHistory = ({ visitors, onSearch }) => {
   return (
     <main className="main-content">
       <div className="visitor-history-section">
+        <div className='section-header'> 
         <h2 className="section-title">Recent Visitor History</h2>
-
         <div className="search-container">
           <div className="search-input-wrapper">
             <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -47,6 +47,10 @@ const VisitorHistory = ({ visitors, onSearch }) => {
             />
           </div>
         </div>
+
+        </div>
+          
+
 
         <div className="table-container">
           <table className="visitors-table">
