@@ -53,7 +53,7 @@ const VisitorHistory = ({ visitors, onSearch }) => {
 
 
         <div className="table-container">
-          <table className="visitors-table">
+          <table className="visitors-table font-bold">
             <thead>
               <tr>
                 <th>Visitor</th>
@@ -71,7 +71,7 @@ const VisitorHistory = ({ visitors, onSearch }) => {
                       <div className="visitor-cell">
                         <Avatar visitor={visitor} />
                         <div className="visitor-info">
-                          <div className="visitor-name">{visitor.name}</div>
+                          <div className="visitor-name font-semibold">{visitor.name}</div>
                           <div className="visitor-email">{visitor.email}</div>
                         </div>
                       </div>
