@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Dashboard from './pages/Dashboard';
+import '../styles/Dashboard.css'
 // Import all your components
-import Sidebar from './components/Sidebar';
-import HeaderStats from './components/HeaderStats';
-import Activities from './components/Activities';
-import VisitorHistory from './components/VisitorHistory';
-import DepartmentVisits from './components/DepartmentVisits';
-import Header from './components/Header';
+import Sidebar from '../components/Sidebar';
+import HeaderStats from '../components/HeaderStats';
+import Activities from '../components/Activities';
+import VisitorHistory from '../components/VisitorHistory';
+import DepartmentVisits from '../components/DepartmentVisits';
+import Header from '../components/Header';
 const activitiesData = [
   { text: "Ridiculus tempus vitae lectus blandit vulputate dolor integer natoque augue.", timeAgo: "7 days ago", icon: "&#128172;" }, // Speech Balloon
   { text: "Scelerisque ultrices tellus tellus sed mattis egestas purus ut vel.", timeAgo: "7 days ago", icon: "&#128100;" }, // Bust in Silhouette
@@ -30,38 +30,53 @@ function debounce(func, delay) {
   };
 }
 
-function App() {
-  // const [searchTerm, setSearchTerm] = useState('');
-  // const [filteredVisitors, setFilteredVisitors] = useState(initialVisitors);
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+function Dashboard() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredVisitors, setFilteredVisitors] = useState(initialVisitors);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // const toggleSidebar = () => {
-  //   setIsSidebarOpen(!isSidebarOpen);
-  // };
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
-  // const debouncedSearch = useMemo(() => debounce((term) => {
-  //   if (!term) {
-  //     setFilteredVisitors(initialVisitors);
-  //   } else {
-  //     const lowercasedTerm = term.toLowerCase();
-  //     const filtered = initialVisitors.filter(visitor =>
-  //       visitor.name.toLowerCase().includes(lowercasedTerm) ||
-  //       visitor.email.toLowerCase().includes(lowercasedTerm) ||
-  //       visitor.visiting.toLowerCase().includes(lowercasedTerm) ||
-  //       visitor.purpose.toLowerCase().includes(lowercasedTerm)
-  //     );
-  //     setFilteredVisitors(filtered);
-  //   }
-  // }, 300), []);
+  const debouncedSearch = useMemo(() => debounce((term) => {
+    if (!term) {
+      setFilteredVisitors(initialVisitors);
+    } else {
+      const lowercasedTerm = term.toLowerCase();
+      const filtered = initialVisitors.filter(visitor =>
+        visitor.name.toLowerCase().includes(lowercasedTerm) ||
+        visitor.email.toLowerCase().includes(lowercasedTerm) ||
+        visitor.visiting.toLowerCase().includes(lowercasedTerm) ||
+        visitor.purpose.toLowerCase().includes(lowercasedTerm)
+      );
+      setFilteredVisitors(filtered);
+    }
+  }, 300), []);
 
-  // useEffect(() => {
-  //   debouncedSearch(searchTerm);
-  // }, [searchTerm, debouncedSearch]);
+  useEffect(() => {
+    debouncedSearch(searchTerm);
+  }, [searchTerm, debouncedSearch]);
 
   return (
     // Use Flexbox for the main layout
-      <Dashboard></Dashboard>
+    <div className="flex min-h-screen">
+      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      {/* Main content area that grows to fill the space */}
+      <main className={`flex-1 p-4 md:p-8 ${isSidebarOpen ? 'main-content-shifted' : ''}`}>
+        <div className={`dashboard-container ${isSidebarOpen ? 'dashboard-container-shifted' : ''}`}>
+        <Header />
+          <HeaderStats />
+          <div className="main-layout">
+            <VisitorHistory visitors={filteredVisitors} onSearch={setSearchTerm} />
+            {/* <Activities activitiesData={activitiesData} /> */}
+            {/* <DepartmentVisits /> */}
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
 
-export default App;
+export default Dashboard;
