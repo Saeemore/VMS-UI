@@ -3,7 +3,12 @@ import React from "react";
 const Activities = ({ activitiesData = [] }) => {
   return (
     <div className="activities-card">
-      <h2 className="activities-card-title">Activities</h2>
+      <div className="activities-cards-header">
+      <h2 className="activities-cards-title">Activities</h2>
+
+      </div>
+      <div className="activities-list-container">
+
       <ul className="activities-list">
         {activitiesData.map((activity, index) => (
           <li className="activity-item" key={index}>
@@ -17,6 +22,8 @@ const Activities = ({ activitiesData = [] }) => {
           </li>
         ))}
       </ul>
+
+      </div>
     </div>
   );
 };

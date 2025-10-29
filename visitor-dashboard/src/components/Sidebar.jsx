@@ -25,7 +25,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           paddingRight:5,
           borderRadius: 50,
           background: "#ffffff",
-          color: "#4c1ef2",
+          color: "#325CF3",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
