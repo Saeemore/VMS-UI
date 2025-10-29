@@ -105,7 +105,7 @@ body{
 .activities-cards-header{display:flex;justify-content:space-between;width:100%;height: 56px;margin-bottom:24px;padding-right: 0px;padding-left: 24px;border-bottom:2px #47455533 solid ;align-items: center;}
 
 
-.activities-cards-title{font-weight:500;font-size:16px;color:#000000;font-family:Roboto;}
+.activities-cards-title{font-weight:500;font-size:16px;color:#000000;font:500 roboto;}
 .activity-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--dashboard-border);color:#333;}
 .activity-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
 .activity-icon-wrapper{width:24px;height:24px;border-radius:var(--radius-full);background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#666;flex-shrink:0;}
@@ -182,7 +182,7 @@ body{
 
 .department-visits-card{background:#fff;padding:0px;box-shadow:0 4px 6px rgba(0,0,0,.1);display:flex ;flex-direction:column;align-items:center;border: 1px solid #47455533;}
 .department-visits-header{display:flex;justify-content:space-between;width:100%;height: 56px;margin-bottom:24px;padding-right: 24px;padding-left: 24px;border-bottom:2px #47455533 solid ;align-items: center;}
-.department-visits-title{font-weight:500;font-size:16px;color:#000000;font-family:Roboto;}
+.department-visits-title{font-weight:500;font-size:16px;color:#000000;font:500 roboto;}
 .department-visits-buttons{display:flex;gap:12px;width: 165px;height: 32px;}
 .department-visits-button{font-size:12px;padding:4px 12px;border-radius:4px;border:1px solid #ccc;color:#666;background:#f0f0f0;cursor:pointer;}
 .department-visits-button.active{background:#fff;color:#000000;border-color:#5a57ff;width: 165px;height: 32px;}

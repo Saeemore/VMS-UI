@@ -1,6 +1,7 @@
 {
   "name": "visitor-dashboard-vite",
   "private": true,
+  "homepage": "https://estmac.com/visitordesk/hostdashboard",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -35,4 +36,5 @@
   "overrides": {
     "vite": "npm:rolldown-vite@7.1.14"
   }
+  
 }
