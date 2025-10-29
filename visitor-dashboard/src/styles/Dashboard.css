@@ -88,7 +88,7 @@ body{
 
 .stat-content .stat-title{font-size:var(--font-size-sm);color:var(--dashboard-gray);font-weight:var(--font-weight-medium);margin-bottom:var(--space-8);}
 .stat-content .stat-value{font-size:var(--font-size-4xl);font-weight:var(--font-weight-bold);color:var(--color-text);margin-bottom:var(--space-12);}
-.stat-content .stat-card-details{color:var(--dashboard-primary);text-decoration:none;font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);margin-left:70%;}
+.stat-content .stat-card-details{color:var(--dashboard-primary);text-decoration:none;font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);float: right;}
 .stat-content .stat-card-details:hover{text-decoration:underline;}
 
 /* === CARD WRAPPERS === */
