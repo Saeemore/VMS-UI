@@ -1,5 +1,6 @@
 import React from "react";
 import { Home, Mail, Users, Shield, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { NavLink } from "react-router-dom";
 import visitordeskicon from "../assets/visitor-desk-icon.svg";
 import visitordesktext from "../assets/text.svg";
 
@@ -55,30 +56,38 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
       <nav className="flex-1" aria-label="Primary">
         <ul className="space-y-2 px-2">
-          <li className="nav-item active" title="Dashboard">
-            <Home size={20} className="shrink-0" />
-            <span className={isSidebarOpen ? "label" : "label hidden"}>Dashboard</span>
+          <li>
+            <NavLink to="/" end style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Dashboard">
+              <Home size={20} className="shrink-0" />
+              <span className={isSidebarOpen ? "label" : "label hidden"}>Dashboard</span>
+            </NavLink>
           </li>
-          <li className="nav-item" title="Inbox">
-            <Mail size={20} className="shrink-0" />
-            <span className={isSidebarOpen ? "label" : "label hidden"}>Inbox</span>
+          <li>
+            <NavLink to="/inbox" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Inbox">
+              <Mail size={20} className="shrink-0" />
+              <span className={isSidebarOpen ? "label" : "label hidden"}>Inbox</span>
+            </NavLink>
           </li>
-          <li className="nav-item" title="Manage Visitors">
-            <Users size={20} className="shrink-0" />
-            <span className={isSidebarOpen ? "label" : "label hidden"}>Manage Visitors</span>
+          <li>
+            <NavLink to="/manage-visitors" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Manage Visitors">
+              <Users size={20} className="shrink-0" />
+              <span className={isSidebarOpen ? "label" : "label hidden"}>Manage Visitors</span>
+            </NavLink>
           </li>
-          <li className="nav-item" title="Security">
-            <Shield size={20} className="shrink-0" />
-            <span className={isSidebarOpen ? "label" : "label hidden"}>Security</span>
+          <li>
+            <NavLink to="/security" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Security">
+              <Shield size={20} className="shrink-0" />
+              <span className={isSidebarOpen ? "label" : "label hidden"}>Security</span>
+            </NavLink>
           </li>
         </ul>
       </nav>
 
       <div className="mt-auto px-2 pb-4">
-        <div className="nav-item" title="Settings">
+        <NavLink to="/settings" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Settings">
           <Settings size={20} className="shrink-0" />
           <span className={isSidebarOpen ? "label" : "label hidden"}>Settings</span>
-        </div>
+        </NavLink>
       </div>
     </div>
   );
