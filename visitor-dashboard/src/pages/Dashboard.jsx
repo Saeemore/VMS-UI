@@ -6,7 +6,7 @@ import Activities from "../components/Activities";
 import VisitorHistory from "../components/VisitorHistory";
 import DepartmentVisits from "../components/DepartmentVisits";
 import Header from "../components/Header";
-
+import { useDrawer } from "../hooks/useDrawer";
 const activitiesData = [
   { text: "Ridiculus tempus vitae lectus blandit vulputate dolor integer natoque augue.", timeAgo: "7 days ago", icon: "&#128172;" },
   { text: "Scelerisque ultrices tellus tellus sed mattis egestas purus ut vel.", timeAgo: "7 days ago", icon: "&#128100;" },
@@ -67,6 +67,13 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredVisitors, setFilteredVisitors] = useState(initialVisitors);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // const [showMissedVisits, setShowMissedVisits] = useState(false);
+  const { open } = useDrawer();
+
+   const handleViewDetails = (key, openerEl) => {
+    // key will be 'missedVisits' | 'expectedVisitors' | 'checkedIn' | 'scheduled'
+    open(key, { opener: openerEl });
+  };
 
   const toggleSidebar = () => setIsSidebarOpen((v) => !v);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -94,29 +101,17 @@ const Dashboard = () => {
   }, [searchTerm, debouncedSearch]);
 
   return (
-    <div className="flex min-h-screen">
-      <div
-        className={`mobile-overlay ${isSidebarOpen ? "show" : ""}`}
-        onClick={closeSidebar}
-        aria-hidden={!isSidebarOpen}
-      />
-
-      <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
-      <main className={`flex-1 p-4 md:p-8 ${isSidebarOpen ? "main-content-shifted" : ""}`}>
-        <div className={`dashboard-container ${isSidebarOpen ? "dashboard-container-shifted" : ""}`}>
-          <Header onSearch={setSearchTerm} onToggleSidebar={toggleSidebar} />
-          <HeaderStats />
-          <div className="main-layout">
-            <VisitorHistory visitors={filteredVisitors} onSearch={setSearchTerm} />
-           <div className="side-by-side">
-            <Activities activitiesData={activitiesData} />
-            <DepartmentVisits />
-            </div>
-          </div>
+    <>
+      {/* If this page needs search in the header, pass down via a Header control bar or add a local search input */}
+      <HeaderStats onViewDetails={handleViewDetails} />
+      <div className="main-layout">
+        <VisitorHistory title="Recent Visitor History" visitors={filteredVisitors} onSearch={setSearchTerm} />
+        <div className="side-by-side">
+          <Activities activitiesData={activitiesData} />
+          <DepartmentVisits />
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 };
 
