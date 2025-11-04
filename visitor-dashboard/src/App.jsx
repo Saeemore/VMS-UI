@@ -8,7 +8,7 @@ import Inbox from "./pages/Inbox";
 import ManageVisitors from "./pages/ManageVisitors";
 import Security from "./pages/Security";
 import Settings from "./pages/Settings";
-
+import Profile from "./pages/Profile";
 import { DrawerProvider } from "./hooks/useDrawer";
 import RightDrawer from "./components/RightDrawer";
 import "./styles/dashboard.css";
@@ -23,7 +23,7 @@ export default function App() {
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/manage-visitors" element={<ManageVisitors />} />
             <Route path="/security" element={<Security />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={<Profile />} />
           </Route>
         </Routes>
 

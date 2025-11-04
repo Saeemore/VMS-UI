@@ -62,12 +62,12 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               <span className={isSidebarOpen ? "label" : "label hidden"}>Dashboard</span>
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink to="/inbox" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Inbox">
               <Mail size={20} className="shrink-0" />
               <span className={isSidebarOpen ? "label" : "label hidden"}>Inbox</span>
             </NavLink>
-          </li>
+          </li> */}
           <li>
             <NavLink to="/manage-visitors" style={{ textDecoration: "none" }} className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} title="Manage Visitors">
               <Users size={20} className="shrink-0" />

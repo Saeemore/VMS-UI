@@ -23,12 +23,12 @@ const Avatar = ({ visitor }) => {
 };
 
 /* Compact row menu */
-function RowMenu({ placement = "left", onEdit, onDelete, onView, onClose }) {
+function RowMenu({ placement = "right", onEdit, onDelete, onView, onClose }) {
   const ref = useRef(null);
 
   useEffect(() => {
-    function onKey(e) { if (e.key === "Escape") onClose?.(); }
-    function onClick(e) { if (ref.current && !ref.current.contains(e.target)) onClose?.(); }
+    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
+    const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose?.(); };
     document.addEventListener("keydown", onKey);
     document.addEventListener("mousedown", onClick);
     return () => {
@@ -37,26 +37,30 @@ function RowMenu({ placement = "left", onEdit, onDelete, onView, onClose }) {
     };
   }, [onClose]);
 
-  const base =
-    "row-menu-panel absolute z-30 rounded-md border border-gray-200 bg-white shadow-lg";
-  const sizing = "w-[150px] max-w-[160px]"; /* keep it tight */
-  const list = "py-1"; /* compact vertical padding */
-
-  // Left of trigger, vertically centered
   const pos =
     placement === "left"
-      ? "right-full mr-2 top-1/2 -translate-y-1/2"
-      : "right-0 top-1/2 -translate-y-1/2";
-
-  const item =
-    "w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 leading-5";
+      ? "right-full mr-0 top-1/2 -translate-y-1/2"
+      : "left-auto right-0 top-1/2 -translate-y-1/2"; // default: align to trigger’s right
 
   return (
-    <div ref={ref} className={`${base} ${sizing} ${pos}`} role="menu" aria-label="Row actions">
-      <div className={list}>
-        <button className={item} onClick={onView}>View</button>
-        <button className={item} onClick={onEdit}>Edit</button>
-        <button className={`${item} text-red-600`} onClick={onDelete}>Delete</button>
+    <div
+      ref={ref}
+      id="row-menu"
+      role="menu"
+      aria-label="Row actions"
+      className={`row-menu-panel absolute ${pos}`}
+    >
+      <div className="row-menu-list">
+        <button className="row-menu-item" role="menuitem" onClick={onView}>
+          Schedule a New Visit
+        </button>
+        <button className="row-menu-item" role="menuitem" onClick={onEdit}>
+          Reschedule Visit
+        </button>
+        {/* <div className="row-menu-sep" aria-hidden="true" /> */}
+        {/* <button className="row-menu-item" role="menuitem" onClick={onDelete} style={{ color:"#dc2626" }}> */}
+          {/* Delete */}
+        {/* </button> */}
       </div>
     </div>
   );
@@ -193,30 +197,36 @@ export default function VisitorHistory({
                     ))}
 
                     {showRowMenu && (
-  <td className="relative">
-    <button
-      aria-label="Row actions"
-      className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100"
-      onClick={() => toggleRowMenu(row.id)}
-    >
-      {/* vertical three dots icon */}
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="5" r="2" fill="#6b7280" />
-        <circle cx="12" cy="12" r="2" fill="#6b7280" />
-        <circle cx="12" cy="19" r="2" fill="#6b7280" />
-      </svg>
-    </button>
+  <td className="td-actions relative">
+  <button
+    aria-label="Row actions"
+    aria-haspopup="menu"
+    aria-expanded={openMenuRowId === row.id}
+    className="menu-trigger inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100"
+    onClick={() => toggleRowMenu(row.id)}
+    type="button"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" />
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="12" cy="19" r="2" />
+    </svg>
+  </button>
 
-    {openMenuRowId === row.id && (
+  {openMenuRowId === row.id && (
+    <div className="menu-left-anchor">
       <RowMenu
         placement="left"
         onView={() => { onRowAction?.("view", row); setOpenMenuRowId(null); }}
         onEdit={() => { onRowAction?.("edit", row); setOpenMenuRowId(null); }}
-        onDelete={() => { onRowAction?.("delete", row); setOpenMenuRowId(null); }}
+        // onDelete={() => { onRowAction?.("delete", row); setOpenMenuRowId(null); }}
         onClose={() => setOpenMenuRowId(null)}
       />
-    )}
-  </td>
+    </div>
+  )}
+</td>
+
+
 )}
 
                   </tr>
