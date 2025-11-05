@@ -500,7 +500,7 @@ font:400 inter; font-weight: 400;font-size: 14px;}
 .drawer-title {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 20px;
   color: var(--color-text, #1f2937);
 }
 
@@ -705,7 +705,7 @@ font:400 inter; font-weight: 400;font-size: 14px;}
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-size: 16px;
-  line-height: 19px;
+  line-height: 100%;
   cursor: pointer;
   transition: background .15s ease, transform .06s ease;
 }
