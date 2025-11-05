@@ -4,7 +4,7 @@ export default function Topbar() {
   return (
     <header className="topbar">
       <div className="greeting">
-        <h1>Good Morning, John</h1>
+        <h1>Hi, John Doe</h1>
         <p>Here’s your visitors summary</p>
       </div>
 

@@ -14,7 +14,7 @@ const Header = ({
   const { open } = useDrawer(); // drawer controller
 
   const isDashboard = pathname === "/";
-  const title = pageTitle ?? (isDashboard ? "Good Morning, John" : routeToTitle(pathname));
+  const title = pageTitle ?? (isDashboard ? "Hello, John" : routeToTitle(pathname));
   const subtitle = pageSubtitle ?? (isDashboard ? "Here’s your visitors summary" : "");
 
   return (

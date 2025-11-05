@@ -33,7 +33,7 @@ export default function Profile() {
 
   return (
     <>
-      <h2 className="section-title mb-4">Profile</h2>
+      {/* <h2 className="section-title mb-4">Profile.</h2> */}
 
       <div className="pf-wrapper">
         {/* Left nav */}
