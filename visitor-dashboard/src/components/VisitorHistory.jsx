@@ -188,11 +188,11 @@ export default function VisitorHistory({
 
             <tbody>
               {visitors.length > 0 ? (
-                visitors.map((row) => (
-                  <tr key={row.id}>
+                visitors.map((row, index) => (
+                  <tr key={row.id || index}>
                     {cols.map((c) => (
                       <td key={c.key} className={c.className}>
-                        {c.render ? c.render(row) : row[c.key]}
+                        {c.render ? c.render(row, index) : row[c.key]}
                       </td>
                     ))}
 

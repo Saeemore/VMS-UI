@@ -154,13 +154,60 @@ body{
 .visiting-name{font-weight:var(--font-weight-medium);color:var(--color-text);margin-bottom:var(--space-2);}
 .visiting-role{font-size:var(--font-size-xs);color:var(--dashboard-gray);}
 
-.purpose-badge{
-  display:inline-block;padding:var(--space-4) var(--space-12);border-radius:var(--radius-full);
-  font-size:var(--font-size-xs);font-weight:var(--font-weight-medium);text-transform:uppercase;letter-spacing:.5px;
+/* === PURPOSE BADGES === */
+.purpose-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  text-align: center;
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease-in-out;
 }
-.purpose-badge.green{background:rgba(16,185,129,.1);color:var(--dashboard-success);border:1px solid rgba(16,185,129,.2);}
-.purpose-badge.blue{background:rgba(59,130,246,.1);color:var(--dashboard-primary);border:1px solid rgba(59,130,246,.2);}
+
+.purpose-badge.default {
+  background: rgba(243, 244, 246, 0.7);
+  color: var(--dashboard-gray);
+  border-color: rgba(229, 231, 235, 0.8);
+}
+
+.purpose-badge.green {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--dashboard-success);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.purpose-badge.blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--dashboard-primary);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.purpose-badge.orange {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--dashboard-warning);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.purpose-badge.purple {
+  background: rgba(155, 111, 247, 0.12);
+  color: var(--dashboard-purple);
+  border-color: rgba(155, 111, 247, 0.25);
+}
+
+.purpose-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
 .time-cell{color:var(--dashboard-gray);}
+
+
 
 /* === DEPARTMENT VISITS === */
 .toggle-buttons{display:flex;gap:var(--space-8);margin-bottom:var(--space-24);}
@@ -1213,3 +1260,78 @@ font:400 inter; font-weight: 400;font-size: 14px;}
   background: #f3f3f3;
   margin: 0 3px;
 }
+
+/* === FIX: Perfect Table Alignment === */
+.visitors-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* uniform column widths */
+}
+
+/* Headers */
+.visitors-table th {
+  background: var(--dashboard-light-gray);
+  color: var(--dashboard-gray);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;        /* ✅ horizontally center header text */
+  vertical-align: middle;    /* ✅ vertically center header text */
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--dashboard-border);
+  height: 60px;
+}
+
+/* Data cells */
+.visitors-table td {
+  text-align: center;        /* ✅ horizontally center cell content */
+  vertical-align: middle;    /* ✅ vertically center content */
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-text);
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--dashboard-border);
+  height: 64px;              /* ✅ uniform row height */
+  transition: background-color 0.2s ease;
+}
+
+/* Keep visitor column left aligned (avatar + name) */
+.visitors-table th:first-child,
+.visitors-table td:first-child {
+  text-align: left !important; /* ✅ only first column left */
+}
+
+/* Hover state */
+.visitors-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Fix visitor cell content alignment */
+.visitor-cell {
+  display: flex;
+  align-items: center;  /* ✅ vertically center image + text */
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+/* Visitor info text */
+.visitor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;  /* ✅ vertically centered within row */
+}
+
+/* Purpose column badges centered */
+/* .purpose-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  text-align: center;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.3px;
+} */

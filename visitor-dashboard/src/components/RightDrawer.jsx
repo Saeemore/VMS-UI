@@ -1,7 +1,7 @@
 // src/components/RightDrawer.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useDrawer } from "../hooks/useDrawer";
-
+import api from "../api/api";
 export default function RightDrawer() {
   const { isOpen, view, close } = useDrawer();
   const panelRef = useRef(null);
@@ -111,6 +111,8 @@ function MissedVisitsPanel() {
    ========================= */
 function NotificationsPanel() {
   const [tab, setTab] = useState("all");
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const tabs = [
     { key: "all", label: "All" },
     { key: "unread", label: "Unread" },
@@ -119,6 +121,46 @@ function NotificationsPanel() {
     { key: "approvals", label: "Approvals" },
     { key: "rejections", label: "Rejections" },
   ];
+
+  // Fetch notifications from backend
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get("/notifications");
+        console.log("Fetched notifications:", res.data);
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, []);
+// Group notifications by date category
+  const groupByDate = (notifs) => {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const isSameDay = (d1, d2) =>
+      d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear();
+
+    const groups = { Today: [], Yesterday: [], Earlier: [] };
+
+    notifs.forEach((n) => {
+      const date = new Date(n.createdAt);
+      if (isSameDay(date, today)) groups.Today.push(n);
+      else if (isSameDay(date, yesterday)) groups.Yesterday.push(n);
+      else groups.Earlier.push(n);
+    });
+
+    return groups;
+  };
+
+  const grouped = groupByDate(notifications);
 
   const Section = ({ title, children }) => (
     <div className="mb-6">
@@ -134,6 +176,31 @@ function NotificationsPanel() {
       <div className="nt-time">{time}</div>
     </div>
   );
+ if (loading) {
+    return <div className="p-4 text-center text-gray-500">Loading notifications...</div>;
+  }
+
+ const formatTimeAgo = (dateStr) => {
+    const date = new Date(dateStr);
+    const diffMs = Date.now() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    return `${diffDays} days ago`;
+  };
+
+// Simple bell icon for rows
+const BellIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+      stroke="#474555"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
   return (
     <div>
@@ -161,29 +228,31 @@ function NotificationsPanel() {
         ))}
       </div>
 
-      {/* sections */}
-      <Section title="Today">
-        <Row icon={<InIcon />} text="Dheeraj Bhaskar has checked out" time="7 days ago" />
-        <Row icon={<XIcon className="text-red-500" />} text="Host John has rejected a visit by Ritesh at 9:45 AM" time="7 days ago" />
-        <Row icon={<PlusIcon />} text="New Visit Request from Ritesh More at 9:45 AM" time="7 days ago" />
-        <Row icon={<OutCard />} text="Anjali Gupta has checked out" time="7 days ago" muted />
-        <Row icon={<InCard />} text="Dheeraj Bhaskar has checked in" time="7 days ago" muted />
-      </Section>
+     {/* Sections */}
+      {Object.entries(grouped).map(([sectionTitle, sectionItems]) =>
+        sectionItems.length > 0 ? (
+          <Section key={sectionTitle} title={sectionTitle}>
+            {sectionItems.map((n) => (
+              <Row
+                key={n._id}
+                icon={<BellIcon />}
+                text={n.message || "New notification"}
+                time={formatTimeAgo(n.createdAt)}
+                muted={n.isRead}
+              />
+            ))}
+          </Section>
+        ) : null
+      )}
 
-      <Section title="Yesterday">
-        <Row icon={<CheckIcon className="text-emerald-600" />} text="Host John has approved a visit by Ritesh at 9:45 AM" time="7 days ago" />
-        <Row icon={<OutCard />} text="Anjali Gupta has checked out" time="7 days ago" muted />
-        <Row icon={<InCard />} text="Dheeraj Bhaskar has checked in" time="7 days ago" muted />
-      </Section>
-
-      <Section title="Oct 23, 2025">
-        <Row icon={<CheckIcon className="text-emerald-600" />} text="Host John has approved a visit by Ritesh at 9:45 AM" time="7 days ago" />
-        <Row icon={<OutCard />} text="Anjali Gupta has checked out" time="7 days ago" muted />
-        <Row icon={<InCard />} text="Dheeraj Bhaskar has checked in" time="7 days ago" muted />
-      </Section>
+      {notifications.length === 0 && (
+        <div className="text-gray-500 text-center py-3">No notifications found.</div>
+      )}
     </div>
   );
 }
+
+
 
 /* =========================
    Simple placeholders for other tabs
