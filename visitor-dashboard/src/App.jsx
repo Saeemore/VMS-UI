@@ -11,7 +11,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import { DrawerProvider } from "./hooks/useDrawer";
 import RightDrawer from "./components/RightDrawer";
-import "./styles/dashboard.css";
+import "./styles/Dashboard.css";
 
 export default function App() {
   return (
