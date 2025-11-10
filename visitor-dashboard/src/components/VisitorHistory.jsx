@@ -1,4 +1,3 @@
-// src/components/VisitorHistory.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const getInitials = (name = "") =>
@@ -73,6 +72,7 @@ function RowMenu({ placement = "right", onEdit, onDelete, onView, onClose }) {
  * - columns: [{ key, header, render?, className?, thClassName?, width? }]
  * - showRowMenu: boolean
  * - onRowAction: (action, row) => void
+ * - onVisitorClick: (row, openerEl) => void   <-- NEW
  */
 export default function VisitorHistory({
   title = "Recent Visitor History",
@@ -84,6 +84,7 @@ export default function VisitorHistory({
   columns,
   showRowMenu = false,
   onRowAction,
+  onVisitorClick,                 // <-- NEW
 }) {
   const defaultColumns = useMemo(
     () => [
@@ -94,7 +95,19 @@ export default function VisitorHistory({
           <div className="visitor-cell">
             <Avatar visitor={row} />
             <div className="visitor-info">
-              <div className="visitor-name">{row.name}</div>
+              {/* Make only the NAME clickable; keeps your existing styles/classes */}
+              <button
+                type="button"
+                className="visitor-name"   // preserve your current look
+                style={{ all: "unset", cursor: "pointer" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onVisitorClick?.(row, e.currentTarget);
+                }}
+                aria-label={`Open details for ${row.name}`}
+              >
+                {row.name}
+              </button>
               <div className="visitor-email">{row.email}</div>
             </div>
           </div>
@@ -128,7 +141,7 @@ export default function VisitorHistory({
         render: (row) => <div className="time-cell">{row.checkout}</div>,
       },
     ],
-    []
+    [onVisitorClick]
   );
 
   const cols = columns && columns.length ? columns : defaultColumns;
@@ -197,37 +210,35 @@ export default function VisitorHistory({
                     ))}
 
                     {showRowMenu && (
-  <td className="td-actions relative">
-  <button
-    aria-label="Row actions"
-    aria-haspopup="menu"
-    aria-expanded={openMenuRowId === row.id}
-    className="menu-trigger inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100"
-    onClick={() => toggleRowMenu(row.id)}
-    type="button"
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <circle cx="12" cy="5" r="2" />
-      <circle cx="12" cy="12" r="2" />
-      <circle cx="12" cy="19" r="2" />
-    </svg>
-  </button>
+                      <td className="td-actions relative">
+                        <button
+                          aria-label="Row actions"
+                          aria-haspopup="menu"
+                          aria-expanded={openMenuRowId === row.id}
+                          className="menu-trigger inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100"
+                          onClick={() => toggleRowMenu(row.id)}
+                          type="button"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="5" r="2" />
+                            <circle cx="12" cy="12" r="2" />
+                            <circle cx="12" cy="19" r="2" />
+                          </svg>
+                        </button>
 
-  {openMenuRowId === row.id && (
-    <div className="menu-left-anchor">
-      <RowMenu
-        placement="left"
-        onView={() => { onRowAction?.("view", row); setOpenMenuRowId(null); }}
-        onEdit={() => { onRowAction?.("edit", row); setOpenMenuRowId(null); }}
-        // onDelete={() => { onRowAction?.("delete", row); setOpenMenuRowId(null); }}
-        onClose={() => setOpenMenuRowId(null)}
-      />
-    </div>
-  )}
-</td>
-
-
-)}
+                        {openMenuRowId === row.id && (
+                          <div className="menu-left-anchor">
+                            <RowMenu
+                              placement="left"
+                              onView={() => { onRowAction?.("view", row); setOpenMenuRowId(null); }}
+                              onEdit={() => { onRowAction?.("edit", row); setOpenMenuRowId(null); }}
+                              // onDelete={() => { onRowAction?.("delete", row); setOpenMenuRowId(null); }}
+                              onClose={() => setOpenMenuRowId(null)}
+                            />
+                          </div>
+                        )}
+                      </td>
+                    )}
 
                   </tr>
                 ))

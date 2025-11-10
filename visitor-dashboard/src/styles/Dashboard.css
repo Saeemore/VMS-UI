@@ -1213,3 +1213,230 @@ font:400 inter; font-weight: 400;font-size: 14px;}
   background: #f3f3f3;
   margin: 0 3px;
 }
+
+/* src/styles/ScanPass.css */
+
+/* src/styles/ScanPass.css */
+
+.scan-pass-page {
+  padding: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.scanner-main-content {
+  display: flex;
+  justify-content: flex-start; /* Align content to the left */
+  width: 100%;
+}
+
+.scanner-container {
+  max-width: 600px; /* Adjust as needed */
+  width: 100%;
+  margin: 0;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px dashed #e0e7ed; /* Dashed border for the scanning area */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Space between scanner and instruction */
+}
+
+#qr-reader {
+  width: 300px; /* Fixed size for the actual scanner output */
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden; /* Ensures the video respects the border radius */
+  background-color: #f0f0f0; /* Placeholder background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Style for the video feed inside the scanner */
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover; /* Ensures video fills the area */
+}
+/* This targets the 'Stop Scanning' text that html5-qrcode adds */
+#qr-reader__html5_qrcode_scanner__scan_region {
+  position: relative;
+  border: none !important; /* Remove default border */
+}
+
+/* Specific styling for the stop button and text overlay by html5-qrcode */
+#qr-reader div > div:nth-child(2) { /* This targets the 'Stop Scanning' text */
+  margin-top: 5px !important;
+  font-size: 12px !important;
+  color: #777 !important;
+}
+
+.scanner-instruction {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+}
+
+/* --- Scan Status Card (Success/Failure) --- */
+.scan-status-card {
+  max-width: 600px;
+  width: 100%;
+  margin: 0;
+  padding: 40px 24px; /* More vertical padding */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+}
+
+.scan-status-card .status-icon {
+  margin-bottom: 10px;
+}
+
+.scan-status-card.success .status-icon {
+  color: #34c759; /* Green for success */
+}
+
+.scan-status-card.failure .status-icon {
+  color: #ff3b30; /* Red for failure */
+}
+
+.scan-status-card .status-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.scan-status-card .status-message {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.action-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+}
+
+.action-button.primary {
+  background-color: #325cf3; /* Blue from your theme */
+  color: #ffffff;
+}
+
+.action-button.primary:hover {
+  background-color: #274bc7;
+}
+
+.action-button.secondary {
+  background-color: transparent;
+  color: #325cf3;
+  border: 1px solid #325cf3;
+  margin-top: 10px; /* Space between buttons */
+}
+
+.action-button.secondary:hover {
+  background-color: #e0e7ed;
+}
+
+/* --- Manual Entry Container --- */
+.manual-entry-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0;
+  padding: 40px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+}
+
+.manual-entry-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.manual-entry-instruction {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.code-input-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.code-input {
+  width: 180px; /* Fixed width for the 4-digit input */
+  padding: 12px 15px;
+  font-size: 28px; /* Larger font for the code */
+  text-align: center;
+  letter-spacing: 5px; /* Spacing between digits */
+  border: 2px solid #e0e7ed;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.code-input:focus {
+  border-color: #325cf3;
+}
+
+.confirm-button {
+  background-color: #325cf3;
+  color: #ffffff;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  width: 100%;
+  max-width: 200px; /* Limit width */
+}
+
+.confirm-button:hover {
+  background-color: #274bc7;
+}
+
+.back-to-scan-button {
+  background-color: transparent;
+  color: #325cf3;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.back-to-scan-button:hover {
+  text-decoration: underline;
+}
