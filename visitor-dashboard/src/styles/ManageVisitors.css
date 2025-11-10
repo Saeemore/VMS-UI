@@ -40,3 +40,15 @@
   border: 1px solid #e5e7eb;
 }
 
+/* Global table safety */
+.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Manage Visitors mobile tweaks (if you want CSS-only fallback too) */
+@media (max-width: 640px){
+  .manage-visitors-page .visitors-table th:nth-child(2),
+  .manage-visitors-page .visitors-table td:nth-child(2) { display: none; } /* Visiting */
+}
+@media (max-width: 480px){
+  .manage-visitors-page .visitors-table th:nth-child(5),
+  .manage-visitors-page .visitors-table td:nth-child(5) { display: none; } /* Checkout */
+}

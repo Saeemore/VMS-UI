@@ -4,6 +4,13 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { XCircle, CheckCircle } from "lucide-react"; // Icons for success/failure
 import "../styles/dashboard.css";
 
+// If you put the GIF in /src/assets:
+// import verifyingGif from "../assets/scan-verifying.gif";
+import verifyingGif from "../assets/scan-verify.gif";
+
+// If you prefer /public, comment the line above and use:
+// const verifyingGif = "/scan-verifying.gif";
+
 // --- Sub-component for Manual Code Entry ---
 const ManualCodeEntry = ({ onCodeSubmit, onBackToScan }) => {
   const [code, setCode] = useState("");
@@ -49,6 +56,7 @@ const ManualCodeEntry = ({ onCodeSubmit, onBackToScan }) => {
 const ScanPass = () => {
   // Define possible states for the page
   const SCANNING = "SCANNING";
+  const VERIFYING = "VERIFYING"; // NEW
   const SUCCESS = "SUCCESS";
   const FAILURE = "FAILURE";
   const MANUAL_ENTRY = "MANUAL_ENTRY";
@@ -61,14 +69,11 @@ const ScanPass = () => {
     if (pageState === SCANNING) {
       // Initialize scanner only when in SCANNING state
       const scannerId = "qr-reader";
-      
+
       const html5QrcodeScanner = new Html5QrcodeScanner(
         scannerId,
         {
-          qrbox: {
-            width: 250,
-            height: 250,
-          },
+          qrbox: { width: 250, height: 250 },
           fps: 10,
         },
         false
@@ -80,15 +85,19 @@ const ScanPass = () => {
       const onScanSuccess = (decodedText, decodedResult) => {
         console.log(`Scan result: ${decodedText}`, decodedResult);
         setScannedData(decodedText);
+
+        // NEW: show verifying animation immediately
+        setPageState(VERIFYING);
+
+        // Stop scanning right away to free camera
+        html5QrcodeScanner.clear();
+
         // Simulate a check-in process
         simulateCheckIn(decodedText);
-        // Stop scanning after a successful scan
-        html5QrcodeScanner.clear(); // Clear the scanner
       };
 
       const onScanError = (errorMessage) => {
-        // console.warn(errorMessage);
-        // Don't change state on every minor error, only on actual failure to read
+        // Don't change state on minor read errors
       };
 
       html5QrcodeScanner.render(onScanSuccess, onScanError);
@@ -96,7 +105,6 @@ const ScanPass = () => {
 
     // Cleanup function to stop the scanner when component unmounts
     return () => {
-      console.log("Cleaning up scanner effect...");
       if (scannerRef.current) {
         scannerRef.current.clear().catch(error => {
           console.error("Failed to clear scanner during cleanup:", error);
@@ -108,10 +116,8 @@ const ScanPass = () => {
 
   // Simulate an API call for check-in
   const simulateCheckIn = (data) => {
-    // In a real app, you'd send 'data' to your backend
     console.log(`Simulating check-in for: ${data}`);
     setTimeout(() => {
-      // Simulate success or failure
       const isSuccessful = data.startsWith("ESTMAC_PASS_"); // Example condition
       if (isSuccessful) {
         setPageState(SUCCESS);
@@ -123,8 +129,8 @@ const ScanPass = () => {
 
   const handleManualCodeSubmit = (code) => {
     setScannedData(code); // Treat manual code as scanned data
-    simulateCheckIn(code); // Simulate check-in with manual code
-    setPageState(SCANNING); // Temporarily go back to scanning to hide input
+    setPageState(VERIFYING); // NEW: show verifying animation
+    simulateCheckIn(code);  // Simulate check-in with manual code
   };
 
   const handleTryAgain = () => {
@@ -145,7 +151,6 @@ const ScanPass = () => {
     setPageState(SCANNING);
   };
 
-
   return (
     <div className="scan-pass-page">
       <h1 className="page-title">Scan Visitor Pass</h1>
@@ -157,8 +162,20 @@ const ScanPass = () => {
             <p className="scanner-instruction">
               Place the visitor's QR code in front of the camera.
             </p>
-            {/* Optional: Debug info */}
-            {/* {scannedData && <p className="scan-result-debug">Last scanned: {scannedData}</p>} */}
+          </div>
+        )}
+
+        {pageState === VERIFYING && ( // NEW: verifying animation
+          <div className="verifying-container">
+            <img
+              src={verifyingGif}
+              alt="Verifying pass…"
+              className="verifying-gif"
+            />
+            <h2 className="status-title">Verifying…</h2>
+            <p className="status-message">
+              Please wait while we validate the pass details.
+            </p>
           </div>
         )}
 

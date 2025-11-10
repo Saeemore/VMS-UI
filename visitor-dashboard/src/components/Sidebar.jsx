@@ -262,7 +262,7 @@ onClick={toggleSidebar}
     	 	 >
    	 	 	   <Shield size={20} className="shrink-0" />
     	 	 	 <span className={isSidebarOpen ? "label" : "label hidden"}>
-  	 	 	   f   Security
+  	 	 	      Security
     	 	   </span>
   	 	 	 </NavLink>
   	 	 </li>

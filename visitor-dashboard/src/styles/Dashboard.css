@@ -1335,3 +1335,253 @@ font:400 inter; font-weight: 400;font-size: 14px;}
   font-size: var(--font-size-sm);
   letter-spacing: 0.3px;
 } */
+
+
+
+
+
+
+
+
+/**************************************
+ * GLOBAL RESPONSIVE LAYER
+ * Applies to ALL pages/components in the CSS you shared.
+ * Paste AT THE END of your file.
+ **************************************/
+
+/* --- Fix: invalid grid rows value --- */
+.main-layout {
+  /* was: grid-template-rows:0.5fr 0..5fr; */
+  grid-template-rows: auto auto;
+}
+
+/* --- Base fluid text & images --- */
+html { font-size: 100%; }
+@media (max-width: 380px){ html { font-size: 95%; } }
+img, svg, canvas { max-width: 100%; height: auto; }
+
+/* Ensure mobile zoom behavior */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea, button { font-size: 16px; }
+}
+
+/* ===============================
+   BREAKPOINT MAP
+   ≥1200 desktop / ≥1024 tablet-L / ≥900 small-laptop
+   ≤768 tablet / ≤640 large mobile / ≤480 small mobile
+   =============================== */
+
+/* ---------- CONTAINER / LAYOUT ---------- */
+@media (max-width: 1200px){
+  .dashboard-container { max-width: 100%; margin: 0; padding: 16px; }
+  .section-header { flex-wrap: wrap; gap: 12px; }
+}
+@media (max-width: 1024px){
+  .main-layout { grid-template-columns: 1fr; gap: 16px; }
+  .main-content { padding: 16px; }
+}
+@media (max-width: 640px){
+  .main-content { padding: 12px; }
+}
+
+/* ---------- SIDEBAR (global) ---------- */
+/* desktop: fixed widths you defined */
+@media (min-width: 900px){
+  .sidebar { position: fixed; left: 0; top: 0; transform: none !important; }
+  .mobile-overlay { display: none !important; }
+}
+/* tablet/phone: off-canvas */
+@media (max-width: 899.98px){
+  .sidebar { width: 14rem; position: fixed; z-index: 1000; transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0%); }
+  .flex > main,
+  .main-content-shifted { margin-left: 0 !important; }
+  .mobile-overlay.show { opacity: 1; visibility: visible; }
+}
+
+/* ---------- HEADER (vd-*) ---------- */
+@media (max-width: 1200px){
+  .vd-search { margin-left: 0; width: 100%; justify-self: stretch; }
+}
+@media (max-width: 1024px){
+  .vd-title { font-size: clamp(22px, 3vw, 28px); }
+  .vd-subtitle { font-size: 15px; }
+  .vd-user { height: 44px; border-radius: 10px; }
+}
+@media (max-width: 768px){
+  .vd-header { grid-template-columns: 1fr; gap: 10px; }
+  .vd-hamburger { display: inline-flex; }
+  .vd-search { order: 3; width: 100%; }
+  .vd-actions { order: 2; justify-content: flex-end; }
+  .vd-search-input { height: 48px; border-radius: 12px; font-size: 15px; width: 100%; }
+  .vd-bell { height: 44px; min-width: 44px; border-radius: 8px; }
+  .vd-user { height: 48px; border-radius: 12px; }
+  .vd-user-name { font-size: 14px; }
+  .vd-user-role { font-size: 12px; }
+}
+
+/* ---------- STATS GRID ---------- */
+@media (max-width: 1200px){
+  .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}
+@media (max-width: 1024px){
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px){
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-card { padding: 16px; min-width: 0; }
+  .stat-card-count { font-size: 28px; }
+}
+
+/* ---------- TWO-COLUMN SECTION (Activities + Department Visits) ---------- */
+@media (max-width: 1024px){
+  .side-by-side { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* ---------- ACTIVITIES (activities-*) ---------- */
+@media (max-width: 768px){
+  .activities-card { padding: 12px; }
+  .activities-cards-header { padding-left: 12px; padding-right: 12px; height: auto; }
+  .activity-item { padding: 10px 0; }
+  .activity-text { font-size: 0.95rem; }
+  .activity-time { font-size: 0.85rem; }
+}
+
+/* ---------- DEPARTMENT VISITS (department-visits-*) ---------- */
+@media (max-width: 1024px){
+  .department-visits-card { padding: 0; }
+  .department-visits-header { padding-left: 16px; padding-right: 16px; height: auto; }
+  .department-visits-buttons { width: auto; height: 32px; gap: 8px; }
+}
+@media (max-width: 768px){
+  .department-visits-chart-container { width: 220px; height: 220px; }
+  .department-visits-center-label { width: 120px; height: 48px; }
+  .department-visits-legend { width: 100%; font-size: 12px; }
+}
+
+/* ---------- MANAGE VISITORS TOOLBAR (mv-*) ---------- */
+@media (max-width: 1024px){
+  .mv-toolbar { flex-wrap: wrap; gap: 10px; }
+  .mv-toolbar-left, .mv-toolbar-right { flex-wrap: wrap; }
+  .mv-toolbar-search { width: 100%; order: 3; }
+  .mv-add-btn { height: 40px; padding: 0 12px; }
+}
+@media (max-width: 640px){
+  .mv-cta { min-width: 140px; height: 42px; font-size: 15px; }
+  .mv-avatar { width: 50px; height: 50px; }
+}
+
+/* ---------- TABLE (visitors-table + cells) ---------- */
+.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 768px){
+  .visitors-table th,
+  .visitors-table td { padding: 10px 8px; font-size: 13px; }
+  .visitor-avatar { width: 32px; height: 32px; }
+  .visitor-name { font-size: 14px; }
+  .visitor-email { font-size: 11px; }
+  .purpose-badge { min-width: auto; padding: 4px 10px; font-size: 12px; }
+}
+
+/* narrow phones: remove least-critical columns to avoid overflow */
+@media (max-width: 640px){
+  /* Hide Visiting column (2nd) */
+  .visitors-table th:nth-child(2),
+  .visitors-table td:nth-child(2) { display: none; }
+}
+@media (max-width: 480px){
+  /* Hide Checkout column (5th) too */
+  .visitors-table th:nth-child(5),
+  .visitors-table td:nth-child(5) { display: none; }
+
+  .td-actions { width: 40px; }
+  .menu-trigger { inline-size: 28px; block-size: 28px; }
+  .visitors-table td { height: 56px; }
+}
+
+/* Always keep first column left-aligned (you already had this) */
+.visitors-table th:first-child,
+.visitors-table td:first-child { text-align: left !important; }
+
+/* ---------- RIGHT DRAWER (drawer-*) ---------- */
+@media (max-width: 1200px){
+  .drawer-panel { width: min(460px, 92vw); }
+}
+@media (max-width: 768px){
+  .drawer-panel { width: min(420px, 96vw); }
+  .drawer-header { min-height: 64px; padding: 16px; }
+  .drawer-body { padding: 0 16px 16px 16px; }
+}
+@media (max-width: 480px){
+  .drawer-panel { width: 100vw; border-radius: 0; }
+  .mv-search { height: 40px; border-radius: 8px; }
+  .mv-search-input { font-size: 15px; }
+}
+
+/* ---------- NOTIFICATIONS (nt-*) ---------- */
+@media (max-width: 768px){
+  .nt-tabs { gap: 4px; }
+  .nt-chip { height: 36px; padding: 0 12px; font-size: 13px; }
+  .nt-row { padding: 10px; }
+  .nt-text { font-size: 14px; }
+  .nt-time { font-size: 12px; }
+}
+
+/* ---------- PROFILE PAGE (pf-*) ---------- */
+@media (max-width: 1024px){
+  .pf-wrapper { grid-template-columns: 1fr; }
+  .pf-content { width: 100%; padding: 20px; }
+  .pf-avatar-block { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+@media (max-width: 640px){
+  .pf-avatar { width: 120px; height: 120px; }
+  .pf-grid { grid-template-columns: 1fr; gap: 12px; }
+  .pf-input { height: 42px; }
+  .pf-save { width: auto; min-width: 140px; height: 48px; }
+}
+
+/* ---------- SCAN PAGE VERIFYING (if present app-wide) ---------- */
+@media (max-width: 640px){
+  .verifying-container { min-height: 240px; padding: 12px; }
+  .verifying-gif { width: 120px; }
+}
+
+/* ---------- SMALL POLISH ---------- */
+@media (max-width: 768px){
+  .section-title { font-size: 16px; }
+  .search-input-wrapper { max-width: 100%; }
+}
+
+
+
+/* --- Mobile stat cards: 2×2 grid like the mock --- */
+@media (max-width: 768px){
+  .stats-grid{
+    grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .stat-card{
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e5e7eb !important;   /* soft gray border */
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.03) !important;
+    min-height: 112px;                       /* consistent height */
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* arrange: title (top), number (middle), link (bottom-right) */
+  .stat-content{
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    width: 100%;
+  }
+  .stat-card-label{ font-size: 12px !important; margin-bottom: 4px !important; color: #4b5563 !important; }
+  .stat-card-count{ font-size: 28px !important; line-height: 1.1; margin-bottom: 0 !important; color: #111827 !important; }
+  .stat-card-details{ font-size: 12px !important; margin-top: auto !important; justify-self: end; text-decoration: none; }
+}
+
+/* ultra-small phones: fall back to 1 column */
+@media (max-width: 360px){
+  .stats-grid{ grid-template-columns: 1fr !important; }
+}
