@@ -40,41 +40,31 @@ export default function HeaderStats({ onViewDetails }) {
     { key: "missedVisits", title: "Missed Visits", count: stats.missedVisits },
   ];
 
-  // return (
-    // <header className="stats-header max-w-6xl mx-auto">
-    //   <div className="stats-grid">
-    //     {visitorStats.map((stat) => (
-    //       <div className="stat-card" data-stat={stat.key} key={stat.key}>
-    //         <div className="stat-content">
-    //           <h3 className="stat-card-label">{stat.title}</h3>
-    //           <div className="stat-card-count">{loading ? "..." : stat.count}</div>
+  return (
+    <header className="stats-header max-w-6xl mx-auto">
+      <div className="stats-grid">
+        {visitorStats.map((stat) => (
+          <div className="stat-card" data-stat={stat.key} key={stat.key}>
+            <div className="stat-content">
+              <h3 className="stat-card-label">{stat.title}</h3>
+              <div className="stat-card-count">{loading ? "..." : stat.count}</div>
 
-  // This logic is now correct because 'dashboardStats' is defined
-  const statsToShow = pageType === "security" ? securityStats : dashboardStats;
+  
+  
 
-  return (
-    <header className="stats-header max-w-6xl mx-auto">
-      <div className="stats-grid">
 
-        {/* 2. Changed this to map over 'statsToShow' */}
-        {statsToShow.map((stat) => (
-          <div className="stat-card" data-stat={stat.key} key={stat.key}>
-            <div className="stat-content">
-              <h3 className="stat-card-label">{stat.title}</h3>
-              <div className="stat-card-count">{stat.count}</div>
-
-              <button
-                ref={(el) => (refs.current[stat.key] = el)}
-                type="button"
-                className="stat-card-details"
-                onClick={() => onViewDetails?.(stat.key, refs.current[stat.key])}
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </header>
-  );
+ <button
+ ref={(el) => (refs.current[stat.key] = el)}
+ type="button"
+  className="stat-card-details"
+  onClick={() => onViewDetails?.(stat.key, refs.current[stat.key])}
+ >
+  View Details
+ </button>
+ </div>
+ </div>
+ ))}
+ </div>
+ </header>
+ );
 }
