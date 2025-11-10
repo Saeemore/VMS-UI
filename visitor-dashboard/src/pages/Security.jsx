@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import "../styles/Dashboard.css";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/Sidebar"; 
 import Header from "../components/Header";
 
+import Dashboard from "./Dashboard";
 const Security = () => {
 
   return (
     <>
-   <h2>Security Page...</h2></>
+   
+   <Dashboard pageType="security"/>
+  
+  
+   </>
+
   );
 };
 

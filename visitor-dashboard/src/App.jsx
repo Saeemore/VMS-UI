@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import { DrawerProvider } from "./hooks/useDrawer";
 import RightDrawer from "./components/RightDrawer";
 import "./styles/dashboard.css";
+import ScanPass from "./pages/ScanPass";
 
 export default function App() {
   return (
@@ -24,6 +25,8 @@ export default function App() {
             <Route path="/manage-visitors" element={<ManageVisitors />} />
             <Route path="/security" element={<Security />} />
             <Route path="/settings" element={<Profile />} />
+            <Route path="/scan-pass" element={<ScanPass />} />
+            
           </Route>
         </Routes>
 
