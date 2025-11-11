@@ -1,220 +1,98 @@
-// src/pages/ScanPass.jsx
-import React, { useEffect, useState, useRef } from "react";
+// FILE: src/pages/ScanPass.jsx
+import React, { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
-import { XCircle, CheckCircle } from "lucide-react"; // Icons for success/failure
-import "../styles/dashboard.css";
+import { CheckCircle, XCircle } from "lucide-react";
+import "../styles/dashboard.css"; 
 
-// If you put the GIF in /src/assets:
-// import verifyingGif from "../assets/scan-verifying.gif";
-import verifyingGif from "../assets/scan-verify.gif";
+const ScanPass = () => {
+  const [mode, setMode] = useState("scan"); // scan | success | fail
 
-// If you prefer /public, comment the line above and use:
-// const verifyingGif = "/scan-verifying.gif";
+  const verifyPass = async (passCode) => {
+    setMode("verifying");
 
-// --- Sub-component for Manual Code Entry ---
-const ManualCodeEntry = ({ onCodeSubmit, onBackToScan }) => {
-  const [code, setCode] = useState("");
+    try {
+      const res = await fetch("http://localhost:5000/api/security/check-pass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pass_code: passCode }),
+      });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (code.length === 4) { // Assuming a 4-digit code
-      onCodeSubmit(code);
+      if (!res.ok) throw new Error();
+      setMode("success");
+    } catch {
+      setMode("fail");
     }
   };
 
-  return (
-    <div className="manual-entry-container">
-      <h2 className="manual-entry-title">Enter Code</h2>
-      <p className="manual-entry-instruction">
-        Please enter the visitor's QR code in front of the camera.
-      </p>
-      <form onSubmit={handleSubmit} className="code-input-form">
-        {/* Simple 4-digit input */}
-        <input
-          type="text"
-          maxLength="4"
-          value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} // Allow only digits
-          className="code-input"
-          placeholder="----"
-          inputMode="numeric"
-          pattern="\d{4}"
-          required
-        />
-        <button type="submit" className="confirm-button">
-          Confirm
-        </button>
-      </form>
-      <button onClick={onBackToScan} className="back-to-scan-button">
-        Back to Scan
-      </button>
-    </div>
-  );
-};
+  const initScanner = () => {
+    setMode("scan");
 
-// --- Main ScanPass Component ---
-const ScanPass = () => {
-  // Define possible states for the page
-  const SCANNING = "SCANNING";
-  const VERIFYING = "VERIFYING"; // NEW
-  const SUCCESS = "SUCCESS";
-  const FAILURE = "FAILURE";
-  const MANUAL_ENTRY = "MANUAL_ENTRY";
+    const scanner = new Html5QrcodeScanner("qr-box", {
+      fps: 10,
+      qrbox: { width: 260, height: 260 }, // matches your UI frame size
+    });
 
-  const [pageState, setPageState] = useState(SCANNING);
-  const [scannedData, setScannedData] = useState(null);
-  const scannerRef = useRef(null); // To store the scanner instance
+    scanner.render(
+      (decodedText) => {
+        scanner.clear().catch(() => {});
+        verifyPass(decodedText);
+      },
+      () => {}
+    );
+  };
 
   useEffect(() => {
-    if (pageState === SCANNING) {
-      // Initialize scanner only when in SCANNING state
-      const scannerId = "qr-reader";
-
-      const html5QrcodeScanner = new Html5QrcodeScanner(
-        scannerId,
-        {
-          qrbox: { width: 250, height: 250 },
-          fps: 10,
-        },
-        false
-      );
-
-      // Store the scanner instance in the ref
-      scannerRef.current = html5QrcodeScanner;
-
-      const onScanSuccess = (decodedText, decodedResult) => {
-        console.log(`Scan result: ${decodedText}`, decodedResult);
-        setScannedData(decodedText);
-
-        // NEW: show verifying animation immediately
-        setPageState(VERIFYING);
-
-        // Stop scanning right away to free camera
-        html5QrcodeScanner.clear();
-
-        // Simulate a check-in process
-        simulateCheckIn(decodedText);
-      };
-
-      const onScanError = (errorMessage) => {
-        // Don't change state on minor read errors
-      };
-
-      html5QrcodeScanner.render(onScanSuccess, onScanError);
-    }
-
-    // Cleanup function to stop the scanner when component unmounts
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(error => {
-          console.error("Failed to clear scanner during cleanup:", error);
-        });
-        scannerRef.current = null; // Clear the ref
-      }
-    };
-  }, [pageState]); // Re-run effect if pageState changes
-
-  // Simulate an API call for check-in
-  const simulateCheckIn = (data) => {
-    console.log(`Simulating check-in for: ${data}`);
-    setTimeout(() => {
-      const isSuccessful = data.startsWith("ESTMAC_PASS_"); // Example condition
-      if (isSuccessful) {
-        setPageState(SUCCESS);
-      } else {
-        setPageState(FAILURE);
-      }
-    }, 1500); // Simulate network delay
-  };
-
-  const handleManualCodeSubmit = (code) => {
-    setScannedData(code); // Treat manual code as scanned data
-    setPageState(VERIFYING); // NEW: show verifying animation
-    simulateCheckIn(code);  // Simulate check-in with manual code
-  };
-
-  const handleTryAgain = () => {
-    setPageState(SCANNING);
-    setScannedData(null); // Clear previous data
-  };
-
-  const handleEnterCodeManually = () => {
-    // If scanner is active, stop it before showing manual entry
-    if (scannerRef.current) {
-      scannerRef.current.clear().catch(error => console.error("Error clearing scanner:", error));
-      scannerRef.current = null; // Clear the ref
-    }
-    setPageState(MANUAL_ENTRY);
-  };
-
-  const handleBackToScanFromManual = () => {
-    setPageState(SCANNING);
-  };
+    initScanner();
+    return () => Html5QrcodeScanner.clear?.();
+  }, []);
 
   return (
-    <div className="scan-pass-page">
-      <h1 className="page-title">Scan Visitor Pass</h1>
+    <div style={{
+      display: "flex", justifyContent: "center", alignItems: "center",
+      height: "100vh", background: "#f1f2f4"
+    }}>
+      
+      {/* Scanner UI */}
+      {mode === "scan" && (
+        <div style={{
+          background: "#fff", padding: "20px",
+          borderRadius: "12px", boxShadow: "0 3px 12px rgba(0,0,0,0.08)"
+        }}>
+          <div id="qr-box" />
+          <p style={{ marginTop: "10px", textAlign: "center", color: "#444" }}>
+            Place the visitor's QR code in front of the camera.
+          </p>
+        </div>
+      )}
 
-      <div className="scanner-main-content">
-        {pageState === SCANNING && (
-          <div className="scanner-container">
-            <div id="qr-reader"></div>
-            <p className="scanner-instruction">
-              Place the visitor's QR code in front of the camera.
-            </p>
-          </div>
-        )}
+      {/* Success */}
+      {mode === "success" && (
+        <div className="scan-status-card success">
+          <CheckCircle size={90} className="status-icon" />
+          <h2>Authorized ✅</h2>
+          <button onClick={initScanner} className="action-button primary">
+            Scan Next
+          </button>
+        </div>
+      )}
 
-        {pageState === VERIFYING && ( // NEW: verifying animation
-          <div className="verifying-container">
-            <img
-              src={verifyingGif}
-              alt="Verifying pass…"
-              className="verifying-gif"
-            />
-            <h2 className="status-title">Verifying…</h2>
-            <p className="status-message">
-              Please wait while we validate the pass details.
-            </p>
-          </div>
-        )}
+      {/* Failure */}
+      {mode === "fail" && (
+        <div className="scan-status-card failure">
+          <XCircle size={90} className="status-icon" />
+          <h2>Not Authorized ❌</h2>
+          <button onClick={initScanner} className="action-button primary">
+            Scan Again
+          </button>
+        </div>
+      )}
 
-        {pageState === SUCCESS && (
-          <div className="scan-status-card success">
-            <CheckCircle size={80} className="status-icon" />
-            <h2 className="status-title">Checked in Successful!</h2>
-            <p className="status-message">
-              Visitor has successfully checked-in. Their pass is valid until 11:00.
-            </p>
-            <button onClick={handleTryAgain} className="action-button primary">
-              Scan Next Pass
-            </button>
-          </div>
-        )}
-
-        {pageState === FAILURE && (
-          <div className="scan-status-card failure">
-            <XCircle size={80} className="status-icon" />
-            <h2 className="status-title">Failed to scan pass</h2>
-            <p className="status-message">
-              Oops! Something went wrong or the pass is invalid. Please try again.
-            </p>
-            <button onClick={handleTryAgain} className="action-button primary">
-              Try Again
-            </button>
-            <button onClick={handleEnterCodeManually} className="action-button secondary">
-              Enter Code Manually
-            </button>
-          </div>
-        )}
-
-        {pageState === MANUAL_ENTRY && (
-          <ManualCodeEntry
-            onCodeSubmit={handleManualCodeSubmit}
-            onBackToScan={handleBackToScanFromManual}
-          />
-        )}
-      </div>
+      {/* Verifying (just a text, no animation needed) */}
+      {mode === "verifying" && (
+        <div style={{ textAlign: "center", fontSize: "20px" }}>
+          Checking Pass...
+        </div>
+      )}
     </div>
   );
 };

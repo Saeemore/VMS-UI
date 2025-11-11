@@ -10,7 +10,7 @@ const Security = () => {
     <>
    
    <Dashboard pageType="security"/>
-  
+  <h1>Abhiii</h1>
   
    </>
 
