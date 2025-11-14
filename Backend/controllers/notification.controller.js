@@ -20,13 +20,13 @@ exports.getMyNotifications = async (req, res) => {
 // Get notifications FOR the logged-in user (their INBOX)
 exports.getNotifications = async (req, res) => {
     try {
-        const notifications = await Notification.find({ 'recipients.user': "68c66bbe36ca3e32e83b2884" })
+        const notifications = await Notification.find({ 'recipients.user': req.user._id })
             .sort({ createdAt: -1 })
             .populate('sender', 'name');
         
         // Add a custom `isRead` field for the frontend based on this user's status
         const processedNotifications = notifications.map(n => {
-            const recipientData = n.recipients.find(r => r.user.toString() === "68c66bbe36ca3e32e83b2884".toString());
+            const recipientData = n.recipients.find(r => r.user.toString() === req.user._id.toString());
             return {
                 ...n.toObject(),
                 isRead: !!recipientData.readAt

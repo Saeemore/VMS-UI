@@ -10,7 +10,7 @@ const { sendVisitPass } = require('../utils/email.util');
 // Get all visit requests awaiting my approval
 exports.getMyVisitRequests = async (req, res) => {
     try {
-        const visits = await Visit.find({ host: req.user._id, status: 'AWAITING_APPROVAL' }).sort({ createdAt: -1 });
+        const visits = await Visit.find({ host: req.user._id, status: 'AWAITING_APPROVAL' }).populate('visitor', 'name selfie').sort({ createdAt: -1 });
         res.json(visits);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -22,15 +22,41 @@ exports.getUpcomingVisits = async (req, res) => {
     try {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
+         const tomorrowStart = new Date(todayStart);
+        tomorrowStart.setDate(tomorrowStart.getDate() + 1);
         const visits = await Visit.find({
             host: req.user._id,
             status: { $in: ['SCHEDULED', 'APPROVED'] },
-            scheduled_at: { $gte: todayStart }
-        }).sort({ scheduled_at: 1 });
+            scheduled_at: { $gte: tomorrowStart }
+        }).populate('visitor', 'name selfie').sort({ scheduled_at: 1 });
         res.json(visits);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
+};
+
+//Expectedvisit today
+exports.getExpectedVisits = async (req, res) => {
+    try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const visits = await Visit.find({
+        host: req.user._id,
+        status: { $in: ['SCHEDULED', 'APPROVED'] },
+        scheduled_at: { $gte: todayStart, $lte: todayEnd }
+    })
+    .populate('visitor', 'name selfie')
+    .sort({ scheduled_at: 1 });
+
+    res.json(visits);
+} catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+}
+
 };
 
 exports.approveVisit = async (req, res) => {
@@ -185,7 +211,7 @@ exports.scheduleVisit = async (req, res) => {
 exports.getRecentVisits = async (req, res) => {
   try {
     // TEMPORARY: Replace with req.user._id when auth is implemented
-    const hostId = "68c53749c28e7815578657a8";
+    const hostId = req.user._id;
 
     // ✅ Only show visits that are completed or checked out
     const visits = await Visit.find({
@@ -224,6 +250,7 @@ exports.getRecentVisits = async (req, res) => {
 exports.getAllVisits = async (req, res) => {
     try {
         // --- THIS IS THE CORRECTED LOGIC ---
+        
         const query = {
             host: req.user._id,
             // Only include statuses that are relevant for an "upcoming" view
@@ -292,7 +319,7 @@ exports.notifySecurity = async (req, res) => {
 
 exports.getMissedVisits = async (req, res) => {
     try {
-        const visits = await Visit.find({ host: req.user._id, status: 'MISSED' })
+        const visits = await Visit.find({ host: req.user._id, status: 'MISSED' }).populate('visitor', 'name selfie')
             .sort({ scheduled_at: -1 });
         res.json(visits);
     } catch (error) {
@@ -332,5 +359,60 @@ exports.rescheduleVisit = async (req, res) => {
         res.json({ message: 'Visit rescheduled and new pass sent.', visit });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+
+// Get visit stats for this host
+exports.getHostVisitStats = async (req, res) => {
+    try {
+        const hostId = req.user._id;
+
+        // --- TODAY RANGE ---
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        // --- TOMORROW START (NO END LIMIT) ---
+        const tomorrowStart = new Date(todayStart);
+        tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+
+        // COUNT: Expected tomorrow onwards (approved only)
+        const expectedTomorrow = await Visit.countDocuments({
+            host: hostId,
+            status: "APPROVED",
+            scheduled_at: { $gte: tomorrowStart }
+        });
+
+        // COUNT: Missed visits
+        const missed = await Visit.countDocuments({
+            host: hostId,
+            status: "MISSED"
+        });
+
+        // COUNT: Awaiting Approval
+        const awaitingApproval = await Visit.countDocuments({
+            host: hostId,
+            status: "AWAITING_APPROVAL"
+        });
+
+        // COUNT: Today's expected visitors (scheduled or approved)
+        const todayExpected = await Visit.countDocuments({
+            host: hostId,
+            status: { $in: ["SCHEDULED", "APPROVED"] },
+            scheduled_at: { $gte: todayStart, $lte: todayEnd }
+        });
+
+        res.status(200).json({
+            expectedTomorrow,
+            missed,
+            awaitingApproval,
+            todayExpected
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };

@@ -1,7 +1,12 @@
 // src/components/Header.jsx
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { useDrawer } from "../hooks/useDrawer"; // add this import
+import { useDrawer } from "../hooks/useDrawer";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";   // ← ADD THIS
+
+
 
 const Header = ({
   onSearch,
@@ -9,17 +14,46 @@ const Header = ({
   showSearch = false,
   pageTitle,
   pageSubtitle,
+  hostName = "John", // <-- Inject from parent or context
 }) => {
   const { pathname } = useLocation();
-  const { open } = useDrawer(); // drawer controller
+  const { open } = useDrawer();
 
-  const isDashboard = pathname === "/";
-  const title = pageTitle ?? (isDashboard ? "Hello, John" : routeToTitle(pathname));
-  const subtitle = pageSubtitle ?? (isDashboard ? "Here’s your visitors summary" : "");
+  const isHost = pathname.startsWith("/host") || pathname.startsWith("/security");
+  const isHostDashboard = pathname === "/host/dashboard" || pathname === "/security/dashboard"  ;
+   const { user,logout } = useContext(AuthContext); 
+
+   if (!user) {
+  return null; // prevents crash on refresh
+}
+
+  // Determine title  
+  let title = pageTitle;
+  let subtitle = pageSubtitle;
+  // console.log(user)
+  if (!pageTitle) {
+    if (isHostDashboard) {
+      title = `Hello, ${(user.name).split(" ")[0]}`;
+      subtitle = "Here’s your visitors summary";
+    } else if (isHost) {
+      // For all other /host/... routes
+      title = routeToTitle(pathname.replace("/host/", ""));
+      subtitle = "";
+    } else {
+      // Normal sections (non-host)
+      title = routeToTitle(pathname);
+      subtitle = "";
+    }
+  }
 
   return (
     <header className="vd-header">
-      <button type="button" className="vd-hamburger" aria-label="Open sidebar" onClick={onToggleSidebar}>
+      <button
+        type="button"
+        className="vd-hamburger"
+        aria-label="Open sidebar"
+        onClick={onToggleSidebar}
+      >
         <span /><span /><span />
       </button>
 
@@ -30,13 +64,28 @@ const Header = ({
 
       {showSearch ? (
         <div className="vd-search">
-          <svg className="vd-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <svg
+            className="vd-search-icon"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
-          <input className="vd-search-input" placeholder="Search anything…" onChange={(e) => onSearch?.(e.target.value)} />
+          <input
+            className="vd-search-input"
+            placeholder="Search anything…"
+            onChange={(e) => onSearch?.(e.target.value)}
+          />
         </div>
-      ) : <div />}
+      ) : (
+        <div />
+      )}
 
       <div className="vd-actions">
         <button
@@ -50,12 +99,48 @@ const Header = ({
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         </button>
+        <button
+  className="vd-logout"
+  type="button"
+  aria-label="Logout"
+  onClick={() => {
+    logout();
+    navigate("/login");
+  }}
+  style={{
+    marginLeft: "10px",
+    background: "#fff",
+    border: "1px solid #ddd",
+    padding: "6px 10px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px"
+  }}
+>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2"
+    fill="none"
+  >
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+  <span style={{ fontSize: "14px" }}>Logout</span>
+</button>
+
 
         <button className="vd-user" type="button" aria-label="Account">
           <span className="vd-avatar" aria-hidden="true" />
           <span className="vd-user-meta">
-            <span className="vd-user-name">Karina D</span>
-            <span className="vd-user-role">Admin</span>
+            <span className="vd-user-name">{user?.name}</span>
+            <span className="vd-user-role">{user?.role}</span>
+
           </span>
           <svg className="vd-caret" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <path d="m6 9 6 6 6-6" />
@@ -66,18 +151,24 @@ const Header = ({
   );
 };
 
-// Maps pathname to a neat page title
+// Convert path to title
 function routeToTitle(pathname) {
-  // strip leading slash and split
-  const seg = pathname.replace(/^\/+/, "").split("/")[0] || "";
-  if (!seg) return "Dashboard";     // safety
+  const clean = pathname.replace(/^\/+/, "");
+  if (!clean) return "Dashboard";
+
+  const base = clean.split("/")[0];
+
   const map = {
-    inbox: "Inbox",
+    dashboard: "Dashboard",
     "manage-visitors": "Manage Visitors",
-    security: "Security",
+    "expected-today": "Expected Today",
+    "expected-tomorrow": "Expected Tomorrow",
+    visits: "Visitors",
     settings: "Settings",
+    inbox: "Inbox",
   };
-  return map[seg] || capitalizeWords(seg.replace(/-/g, " "));
+
+  return map[base] || capitalizeWords(base.replace(/-/g, " "));
 }
 
 function capitalizeWords(str) {
@@ -87,5 +178,5 @@ function capitalizeWords(str) {
     .map((w) => w[0]?.toUpperCase() + w.slice(1))
     .join(" ");
 }
-// routeToTitle + capitalizeWords unchanged...
+
 export default Header;

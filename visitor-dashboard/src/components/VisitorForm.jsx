@@ -1,31 +1,33 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useParams } from "react-router-dom";
+
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Search, Check, Camera, Upload, Calendar } from 'lucide-react';
 import '../styles/visitorForm.css'; // <- local page CSS (applies only to this page)
-
+import api from '../api/api';
 // Mock API client (replace with your real client)
-const apiClient = {
-  get: async (url) => {
-    if (url.includes('/public/hosts/')) {
-      return {
-        data: [
-          { _id: '1', name: 'John Smith', department: 'Solution Design Team', role: 'Manager' },
-          { _id: '2', name: 'Jane Doe', department: 'Marketing', role: 'Specialist' },
-          { _id: '3', name: 'Peter Jones', department: 'Engineering', role: 'Developer' },
-          { _id: '4', name: 'Susan Lee', department: 'Human Resources', role: 'Coordinator' },
-          { _id: '5', name: 'Mike Brown', department: 'Solution Design Team', role: 'Architect' },
-          { _id: '6', name: 'Emily White', department: 'Engineering', role: 'QA Tester' },
-        ]
-      }
-    }
-    return { data: {} };
-  },
-  post: async (url, formData) => {
-    console.log('Mock POST:', url);
-    for (let [k, v] of formData.entries()) console.log(k, v);
-    return { data: { message: 'ok' } };
-  }
-};
+// const api = {
+//   get: async (url) => {
+//     if (url.includes('/public/hosts/')) {
+//       return {
+//         data: [
+//           { _id: '1', name: 'John Smith', department: 'Solution Design Team', role: 'Manager' },
+//           { _id: '2', name: 'Jane Doe', department: 'Marketing', role: 'Specialist' },
+//           { _id: '3', name: 'Peter Jones', department: 'Engineering', role: 'Developer' },
+//           { _id: '4', name: 'Susan Lee', department: 'Human Resources', role: 'Coordinator' },
+//           { _id: '5', name: 'Mike Brown', department: 'Solution Design Team', role: 'Architect' },
+//           { _id: '6', name: 'Emily White', department: 'Engineering', role: 'QA Tester' },
+//         ]
+//       }
+//     }
+//     return { data: {} };
+//   },
+//   post: async (url, formData) => {
+//     console.log('Mock POST:', url);
+//     for (let [k, v] of formData.entries()) console.log(k, v);
+//     return { data: { message: 'ok' } };
+//   }
+// };
 
 const dataURLtoBlob = (dataurl) => {
   if (!dataurl) return null;
@@ -116,11 +118,17 @@ const Step2 = ({ formData, setFormData, onNext, onBack }) => {
 const Step3 = ({ formData, setFormData, companyId, onNext, onBack }) => {
   const { data: hosts, isLoading } = useQuery({
     queryKey: ['hosts', companyId],
-    queryFn: () => apiClient.get(`/public/hosts/${companyId}`).then(r => r.data),
+    queryFn: async () => {
+  const res = await api.get(`/public/hosts/${companyId}`);
+  console.log(res)
+  if (!(res.status>=200 && res.status<300)) throw new Error("Failed to fetch hosts");
+  const data = await res.data;
+  return data;
+},
     enabled: !!companyId
   });
   const [q, setQ] = useState('');
-  const filtered = hosts?.filter(h => h.name.toLowerCase().includes(q.toLowerCase()) || (h.role && h.role.toLowerCase().includes(q.toLowerCase())) || (h.department && h.department.toLowerCase().includes(q.toLowerCase())));
+  const filtered = hosts?.filter(h => h.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div>
       <h2 className="visitor-title">Who Are You Visiting?</h2>
@@ -247,7 +255,8 @@ const Step4 = ({ uploadedSelfie, setUploadedSelfie, capturedImage, setCapturedIm
 
 /* --- Main component --- */
 export default function VisitorForm() {
-  const { companyId } = { companyId: '68ce5b39b018eb3126e6e988' };
+  // const { companyId } = { companyId: '68ce5b39b018eb3126e6e988' };
+  const { companyId } = useParams();
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', organization: '', purpose: '', host_id: '' });
@@ -256,7 +265,7 @@ export default function VisitorForm() {
   const [uploadedSelfie, setUploadedSelfie] = useState(null);
 
   const mutation = useMutation({
-    mutationFn: (fd) => apiClient.post('/public/visits', fd),
+    mutationFn: (fd) => api.post('/public/visits', fd),
     onSuccess: () => {
       alert('Request submitted successfully!');
       setStep(1);

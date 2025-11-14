@@ -11,7 +11,7 @@ const {
     getNotifications 
 } = require('../controllers/notification.controller');
 
-// router.use(protect); // All routes in this file are protected
+router.use(protect); // All routes in this file are protected
 
 // router.get('/', getMyNotifications);
 router.patch('/:id/read', markAsRead);

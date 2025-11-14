@@ -3,7 +3,7 @@ import api from "../api/api"; // ✅ Make sure this file exists
 
 export default function HeaderStats({ onViewDetails }) {
   const [stats, setStats] = useState({
-    checkedIn: 0,
+    awaitingApproval: 0,
     expectedVisitors: 0,
     scheduled: 0,
     missedVisits: 0,
@@ -16,13 +16,13 @@ export default function HeaderStats({ onViewDetails }) {
     const fetchStats = async () => {
       try {
         // ✅ Make sure your backend route matches this endpoint
-        const res = await api.get("/stats/dashboard");
+        const res = await api.get("/host/stats/");
         // console.log("Fetched stats:", res.data);
         setStats({
-          checkedIn: res.data.checkedInCount || 0,
-          expectedVisitors: res.data.visitsToday || 0,
-          scheduled: res.data.pendingApprovals || 0,
-          missedVisits: res.data.totalUsers || 0, // Adjust as needed for your logic
+          awaitingApproval: res.data.awaitingApproval || 0,
+          expectedVisitors: res.data.todayExpected || 0,
+          scheduled: res.data.expectedTomorrow || 0,
+          missedVisits: res.data.missed || 0, // Adjust as needed for your logic
         });
       } catch (err) {
         console.error("Error fetching dashboard stats:", err);
@@ -34,14 +34,14 @@ export default function HeaderStats({ onViewDetails }) {
   }, []);
 
   const visitorStats = [
-    { key: "checkedIn", title: "Checked In Visitors", count: stats.checkedIn },
+    { key: "approval", title: "Waiting for Approval", count: stats.awaitingApproval },
     { key: "expectedVisitors", title: "Expected Visitors", count: stats.expectedVisitors },
-    { key: "scheduled", title: "Scheduled Visits", count: stats.scheduled },
+    { key: "scheduled", title: "Upcoming Visits", count: stats.scheduled },
     { key: "missedVisits", title: "Missed Visits", count: stats.missedVisits },
   ];
 
   return (
-    <header className="stats-header max-w-6xl mx-auto">
+    <header className="stats-header max-w-8xl mx-auto">
       <div className="stats-grid">
         {visitorStats.map((stat) => (
           <div className="stat-card" data-stat={stat.key} key={stat.key}>

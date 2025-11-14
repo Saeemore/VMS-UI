@@ -39,41 +39,18 @@ function RowMenu({ placement = "right", onEdit, onDelete, onView, onClose }) {
   const pos =
     placement === "left"
       ? "right-full mr-0 top-1/2 -translate-y-1/2"
-      : "left-auto right-0 top-1/2 -translate-y-1/2"; // default: align to trigger’s right
+      : "left-auto right-0 top-1/2 -translate-y-1/2";
 
   return (
-    <div
-      ref={ref}
-      id="row-menu"
-      role="menu"
-      aria-label="Row actions"
-      className={`row-menu-panel absolute ${pos}`}
-    >
+    <div ref={ref} id="row-menu" role="menu" aria-label="Row actions" className={`row-menu-panel absolute ${pos}`}>
       <div className="row-menu-list">
-        <button className="row-menu-item" role="menuitem" onClick={onView}>
-          Schedule a New Visit
-        </button>
-        <button className="row-menu-item" role="menuitem" onClick={onEdit}>
-          Reschedule Visit
-        </button>
-        {/* <div className="row-menu-sep" aria-hidden="true" /> */}
-        {/* <button className="row-menu-item" role="menuitem" onClick={onDelete} style={{ color:"#dc2626" }}> */}
-          {/* Delete */}
-        {/* </button> */}
+        <button className="row-menu-item" role="menuitem" onClick={onView}>Schedule a New Visit</button>
+        <button className="row-menu-item" role="menuitem" onClick={onEdit}>Reschedule Visit</button>
       </div>
     </div>
   );
 }
 
-
-/**
- * Props:
- * - title, visitors, onSearch, showAddButton, onAdd, addButtonText
- * - columns: [{ key, header, render?, className?, thClassName?, width? }]
- * - showRowMenu: boolean
- * - onRowAction: (action, row) => void
- * - onVisitorClick: (row, openerEl) => void   <-- NEW
- */
 export default function VisitorHistory({
   title = "Recent Visitor History",
   visitors = [],
@@ -84,27 +61,76 @@ export default function VisitorHistory({
   columns,
   showRowMenu = false,
   onRowAction,
-  onVisitorClick,                 // <-- NEW
+  onVisitorClick,
 }) {
+
+  // ----------------------------
+  // 🔥 NEW: Sorting State
+  // ----------------------------
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key && prev.direction === "asc") {
+        return { key, direction: "desc" };
+      } else if (prev.key === key && prev.direction === "desc") {
+        return { key: null, direction: null }; // remove sort
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  // ----------------------------
+  // 🔥 NEW: Pagination State
+  // ----------------------------
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // ----------------------------
+  // 🔥 NEW: Apply Sorting
+  // ----------------------------
+  const sortedVisitors = useMemo(() => {
+    let sortable = [...visitors];
+
+    if (sortConfig.key) {
+      sortable.sort((a, b) => {
+        const A = a[sortConfig.key]?.toString().toLowerCase() || "";
+        const B = b[sortConfig.key]?.toString().toLowerCase() || "";
+
+        if (A < B) return sortConfig.direction === "asc" ? -1 : 1;
+        if (A > B) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortable;
+  }, [visitors, sortConfig]);
+
+  // ----------------------------
+  // 🔥 NEW: Pagination Logic
+  // ----------------------------
+  const totalPages = Math.ceil(sortedVisitors.length / rowsPerPage);
+  const paginatedVisitors = sortedVisitors.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
   const defaultColumns = useMemo(
     () => [
       {
-        key: "visitor",
+        key: "name",
         header: "Visitor",
         render: (row) => (
           <div className="visitor-cell">
             <Avatar visitor={row} />
             <div className="visitor-info">
-              {/* Make only the NAME clickable; keeps your existing styles/classes */}
               <button
                 type="button"
-                className="visitor-name"   // preserve your current look
+                className="visitor-name"
                 style={{ all: "unset", cursor: "pointer" }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onVisitorClick?.(row, e.currentTarget);
                 }}
-                aria-label={`Open details for ${row.name}`}
               >
                 {row.name}
               </button>
@@ -130,24 +156,15 @@ export default function VisitorHistory({
           <span className={`purpose-badge ${row.purposecolor}`}>{row.purpose}</span>
         ),
       },
-      {
-        key: "checkin",
-        header: "Check In",
-        render: (row) => <div className="time-cell">{row.checkin}</div>,
-      },
-      {
-        key: "checkout",
-        header: "Check Out",
-        render: (row) => <div className="time-cell">{row.checkout}</div>,
-      },
+      { key: "checkin", header: "Check In" },
+      { key: "checkout", header: "Check Out" },
     ],
     [onVisitorClick]
   );
 
-  const cols = columns && columns.length ? columns : defaultColumns;
+  const cols = columns?.length ? columns : defaultColumns;
 
   const [openMenuRowId, setOpenMenuRowId] = useState(null);
-
   const toggleRowMenu = (rowId) => {
     setOpenMenuRowId((prev) => (prev === rowId ? null : rowId));
   };
@@ -160,7 +177,7 @@ export default function VisitorHistory({
 
           <div className="search-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div className="search-input-wrapper">
-              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -169,15 +186,14 @@ export default function VisitorHistory({
                 className="search-input"
                 placeholder="Search Visitors..."
                 onChange={(e) => onSearch?.(e.target.value)}
-                aria-label="Filter visitors"
               />
             </div>
 
             {showAddButton && (
               <button type="button" onClick={onAdd} className="mv-add-btn" style={{ height: 40 }}>
-                <span className="mv-add-icon" style={{ display: "inline-flex", marginRight: 6 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                <span className="mv-add-icon" style={{ marginRight: 6 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2" />
                   </svg>
                 </span>
                 {addButtonText}
@@ -191,17 +207,25 @@ export default function VisitorHistory({
             <thead>
               <tr>
                 {cols.map((c) => (
-                  <th key={c.key} className={c.thClassName} style={{ width: c.width }}>
+                  <th
+                    key={c.key}
+                    className={c.thClassName}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSort(c.key)}
+                  >
                     {c.header}
+                    {sortConfig.key === c.key &&
+                      (sortConfig.direction === "asc" ? " ↑" :
+                       sortConfig.direction === "desc" ? " ↓" : "")}
                   </th>
                 ))}
-                {showRowMenu && <th style={{ width: 48 }}></th>}
+                {showRowMenu && <th></th>}
               </tr>
             </thead>
 
             <tbody>
-              {visitors.length > 0 ? (
-                visitors.map((row, index) => (
+              {paginatedVisitors.length > 0 ? (
+                paginatedVisitors.map((row, index) => (
                   <tr key={row.id || index}>
                     {cols.map((c) => (
                       <td key={c.key} className={c.className}>
@@ -212,14 +236,10 @@ export default function VisitorHistory({
                     {showRowMenu && (
                       <td className="td-actions relative">
                         <button
-                          aria-label="Row actions"
-                          aria-haspopup="menu"
-                          aria-expanded={openMenuRowId === row.id}
                           className="menu-trigger inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100"
                           onClick={() => toggleRowMenu(row.id)}
-                          type="button"
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <circle cx="12" cy="5" r="2" />
                             <circle cx="12" cy="12" r="2" />
                             <circle cx="12" cy="19" r="2" />
@@ -227,33 +247,54 @@ export default function VisitorHistory({
                         </button>
 
                         {openMenuRowId === row.id && (
-                          <div className="menu-left-anchor">
-                            <RowMenu
-                              placement="left"
-                              onView={() => { onRowAction?.("view", row); setOpenMenuRowId(null); }}
-                              onEdit={() => { onRowAction?.("edit", row); setOpenMenuRowId(null); }}
-                              // onDelete={() => { onRowAction?.("delete", row); setOpenMenuRowId(null); }}
-                              onClose={() => setOpenMenuRowId(null)}
-                            />
-                          </div>
+                          <RowMenu
+                            placement="left"
+                            onView={() => { onRowAction?.("view", row); setOpenMenuRowId(null); }}
+                            onEdit={() => { onRowAction?.("edit", row); setOpenMenuRowId(null); }}
+                            onClose={() => setOpenMenuRowId(null)}
+                          />
                         )}
                       </td>
                     )}
-
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan={(cols?.length || 0) + (showRowMenu ? 1 : 0)}
-                    style={{ textAlign: "center", padding: "2rem", color: "#6B7280" }}
-                  >
-                    No visitors found matching your search.
+                  <td colSpan={cols.length + 1} style={{ textAlign: "center", padding: "2rem" }}>
+                    No visitors found
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* ---------------------------- */}
+        {/* 🔥 NEW PAGINATION FOOTER     */}
+        {/* ---------------------------- */}
+        <div className="pagination-controls" style={{ marginTop: 16, display: "flex", justifyContent: "space-between" }}>
+          <div>
+            Rows per page:{" "}
+            <select
+              value={rowsPerPage}
+              onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+              className="rows-select"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+
+          <div className="pagination-buttons" style={{ display: "flex", gap: 8 }}>
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+              Prev
+            </button>
+            <span>{currentPage} / {totalPages}</span>
+            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </main>

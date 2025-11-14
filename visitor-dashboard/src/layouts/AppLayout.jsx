@@ -10,7 +10,7 @@ export default function AppLayout() {
   const closeSidebar = () => setIsSidebarOpen(false);
   const { pathname } = useLocation();
   // Make sure it matches your Dashboard path exactly
-  const showSearch = pathname === "/";  // if your dashboard is at "/"
+  const showSearch = pathname === "/host/dashboard" || "/security/dashboard";  // if your dashboard is at "/"
   return (
     <div className="flex min-h-screen">
       <div

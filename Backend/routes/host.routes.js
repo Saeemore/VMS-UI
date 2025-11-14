@@ -14,17 +14,21 @@ const {
     getAllVisits,
     notifySecurity,
     getMissedVisits,
-    rescheduleVisit
+    rescheduleVisit,
+    getExpectedVisits,
+    getHostVisitStats
 } = require('../controllers/host.controller');
 
 // All routes in this file are protected and for hosts only
-// router.use(protect, authorize('host'));
+router.use(protect, authorize('host'));
 
 // 2. DEFINE THE FILE UPLOAD FIELDS
 const imageUploads = upload.fields([{ name: 'selfie', maxCount: 1 }, { name: 'aadhar', maxCount: 1 }]);
 
 router.get('/requests', getMyVisitRequests);
+router.get('/stats', getHostVisitStats);
 router.get('/upcoming', getUpcomingVisits);
+router.get('/expected', getExpectedVisits);
 router.patch('/visits/:id/approve', approveVisit);
 router.patch('/visits/:id/reject', rejectVisit);
 router.get('/recent', getRecentVisits);
