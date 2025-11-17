@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Player } from '@lottiefiles/react-lottie-player'; // <-- 1. Import the Lottie Player
 
-import errora from "../../dist/assets/error.json" 
+// import errora from "../../dist/assets/error.json" 
 const CustomErrorToast = ({ isOpen, message, onClose }) => {
   console.log("a")
   return (
