@@ -43,6 +43,35 @@
 /* Global table safety */
 .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
+/* ============================
+   MODAL STYLES (For Add New)
+   ============================ */
+
+
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+}
+
+@keyframes modalFade {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
 /* Manage Visitors mobile tweaks (if you want CSS-only fallback too) */
 @media (max-width: 640px){
   .manage-visitors-page .visitors-table th:nth-child(2),
@@ -52,3 +81,30 @@
   .manage-visitors-page .visitors-table th:nth-child(5),
   .manage-visitors-page .visitors-table td:nth-child(5) { display: none; } /* Checkout */
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.modal-content {
+  background: #fff;
+  width: 95%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalFade 0.25s ease-out;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}     
