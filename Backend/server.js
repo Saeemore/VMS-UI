@@ -15,7 +15,8 @@ const notificationRoutes = require('./routes/notification.routes');
 const visitorRoutes = require('./routes/visitor.routes');
 const adminStatRoutes=require('./routes/adminStats.routes')
 const flagMissedVisits = require('./jobs/missedVisits.job');
-
+const scanRoutes = require('./routes/scan.routes');
+const visitRoutes = require('./routes/visit.routes');
 const app = express();
 
 // Middleware
@@ -41,7 +42,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/stats',adminStatRoutes );
 app.use('/api/visitors', visitorRoutes);
-
+app.use('/api/scan', scanRoutes);
+app.use('/api/visits', visitRoutes);
 
 app.get('/', (req, res) => res.send('Visitor Management System API is live!'));
 
