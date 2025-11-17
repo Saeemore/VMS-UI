@@ -22,4 +22,4 @@ const Button = ({ children, isLoading, variant = 'primary', className = '', ...p
   );
 };
 
-export default Button;  
+export default Button;   

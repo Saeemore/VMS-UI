@@ -1,6 +1,6 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 /* Tailwind should be wired in your build; avoid inline @import that breaks parsing */
 
 /* === TOKENS === */
