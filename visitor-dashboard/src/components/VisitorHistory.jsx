@@ -175,31 +175,43 @@ export default function VisitorHistory({
         <div className="section-header" style={{ gap: 12, alignItems: "center" }}>
           <h2 className="section-title">{title}</h2>
 
-          <div className="search-container" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div className="search-input-wrapper">
-              <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search Visitors..."
-                onChange={(e) => onSearch?.(e.target.value)}
-              />
-            </div>
+        <div className="search-container">
+  
+  {/* SEARCH BAR */}
+  <div className="mv-search-box">
+    <input
+      type="text"
+      placeholder="Search Visitors ..."
+      onChange={(e) => onSearch?.(e.target.value)}
+    />
+    <svg
+      className="mv-search-icon"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
 
-            {showAddButton && (
-              <button type="button" onClick={onAdd} className="mv-add-btn" style={{ height: 40 }}>
-                <span className="mv-add-icon" style={{ marginRight: 6 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2" />
-                  </svg>
-                </span>
-                {addButtonText}
-              </button>
-            )}
-          </div>
+    
+  </div>
+
+  {/* ADD NEW BUTTON */}
+  {showAddButton && (
+    <button className="add-new-btn" onClick={onAdd}>
+      <svg width="16" height="16" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" stroke="#fff" strokeWidth="2" />
+      </svg>
+      {addButtonText}
+    </button>
+  )}
+
+</div>
+
+
         </div>
 
         <div className="table-container">

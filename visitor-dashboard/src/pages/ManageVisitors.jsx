@@ -55,6 +55,16 @@ export default function ManageVisitors() {
       // ✅ Define purpose colors OUTSIDE the map
       const purposeColors = ["blue", "green", "purple", "orange"];
 
+      const formatDate = (date) =>
+  new Date(date).toLocaleString("en-IN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true    // If you want AM/PM
+  });
+
       // ✅ Map DB data to table format
       const formatted = data.map((v, i) => ({
         id: v._id,
@@ -64,8 +74,8 @@ export default function ManageVisitors() {
         visitingrole: v.host?.email || "",
         purpose: v.purpose || "—",
         purposecolor: purposeColors[i % purposeColors.length], // ✅ alternate colors
-        checkin: v.createdAt ? new Date(v.createdAt).toLocaleString() : "—",
-        checkout: v.updatedAt ? new Date(v.updatedAt).toLocaleString() : "—",
+        checkin: v.createdAt ? formatDate(v.createdAt): "—",
+        checkout: v.updatedAt ? formatDate(v.updatedAt): "—",
         avatar: v.visitor?._id
           ? `${BASE_URL}/api/visitors/${v.visitor._id}/selfie`
           : "/assets/default-avatar.png",
@@ -233,7 +243,12 @@ export default function ManageVisitors() {
               ✕
             </button>
 
-            <ScheduleVisitForm isModal={true} />
+            <ScheduleVisitForm isModal={true}
+            onSuccess={()=>{
+              setShowScheduleForm(false);
+              fetchVisitors();
+            }}
+            />
           </div>
         </div>
       )}
