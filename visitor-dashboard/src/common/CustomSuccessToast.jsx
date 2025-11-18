@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Player } from '@lottiefiles/react-lottie-player';
-import success from "../assets/Success.json";
+// import success from "../../dist/assets/Success.json";
 
 const CustomSuccessToast = ({ isOpen, message, onClose }) => {
   return (

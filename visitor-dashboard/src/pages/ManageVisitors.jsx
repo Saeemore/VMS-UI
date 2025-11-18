@@ -4,6 +4,9 @@
 import React, { useMemo, useEffect, useState } from "react";
 import VisitorHistory from "../components/VisitorHistory";
 import api from "../api/api"; // ✅ axios instance
+import ScheduleVisitForm from "../components/ScheduleVisitForm";
+import "../styles/ManageVisitors.css";
+
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -33,6 +36,7 @@ export default function ManageVisitors() {
   const [allVisitors, setAllVisitors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [vw, setVw] = useState(getViewportFlags());
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
 
   // listen to resize to toggle responsive columns
   useEffect(() => {
@@ -207,13 +211,33 @@ export default function ManageVisitors() {
         visitors={rows}
         onSearch={setSearchTerm}
         showAddButton
-        onAdd={() => console.log("Add New clicked")}
+        onAdd={() => setShowScheduleForm(true)}
         addButtonText="Add New"
         columns={columns}
         showRowMenu
         onRowAction={handleRowAction}
         loading={loading}
       />
+      {/* ============================
+          SHOW FORM IN MODAL POPUP
+      ============================ */}
+      {showScheduleForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+
+            {/* Close button */}
+            <button
+              className="modal-close"
+              onClick={() => setShowScheduleForm(false)}
+            >
+              ✕
+            </button>
+
+            <ScheduleVisitForm isModal={true} />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

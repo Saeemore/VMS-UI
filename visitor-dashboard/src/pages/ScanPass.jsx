@@ -5,6 +5,78 @@ export default function ScanPass() {
   const [step, setStep] = useState("loading"); // loading → scan → fail → manual
   const [code, setCode] = useState(["", "", "", "", "", ""]);
 
+
+  // inside ScanPass component
+  const validateQR = async (qrString) => {
+  try {
+    const res = await fetch("/api/scanner/validate-qr", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qrData: qrString }),
+    });
+
+    const data = await res.json();
+    console.log("QR Response:", data);
+
+    if (!data.success) {
+      setStep("fail");
+      return;
+    }
+
+    // Store visitor data
+    setVisitorData(data.visitor);
+    setStep("success");
+
+  } catch (error) {
+    console.log("API ERROR", error);
+  }
+};
+
+const handleConfirm = async () => {
+  const finalCode = code.join("");
+
+  console.log("Sending code:", finalCode);
+
+  const res = await fetch("/api/scanner/validate-code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: finalCode }),
+  });
+
+  const data = await res.json();
+  console.log("Manual Code Response:", data);
+
+  if (!data.success) {
+    alert("Invalid Code");
+    return;
+  }
+
+  setVisitorData(data.visitor);
+  setStep("success");
+};
+
+
+const handleCodeChange = (value, index) => {
+  if (!/^[0-9A-Za-z]?$/.test(value)) return; // only 1 char
+
+  const newCode = [...code];
+  newCode[index] = value;
+  setCode(newCode);
+
+  // Auto move forward
+  if (value && index < 5) {
+    document.getElementById(`code-${index + 1}`).focus();
+  }
+};
+
+// Move back on Backspace
+const handleKeyDown = (e, index) => {
+  if (e.key === "Backspace" && code[index] === "" && index > 0) {
+    document.getElementById(`code-${index - 1}`).focus();
+  }
+};
+
+
   // ---------- Step: Scanner Initialization ----------
   useEffect(() => {
     if (step !== "scan") return;
@@ -18,6 +90,8 @@ export default function ScanPass() {
     scanner.render(
       (decodedText) => {
         console.log("SCANNED:", decodedText);
+
+        validateQR(decodedText);
 
         // 🔥 Replace with your backend authorization logic
         const isAuthorized = decodedText === "VALID";
@@ -100,19 +174,22 @@ export default function ScanPass() {
           Enter Code Manually To Confirm Your Visit
         </p>
 
-        <div style={styles.codeContainer}>
-          {code.map((digit, index) => (
-            <input
-              key={index}
-              value={digit}
-              maxLength={1}
-              onChange={(e) => handleCodeChange(e.target.value, index)}
-              style={styles.codeBox}
-            />
-          ))}
-        </div>
+       <div style={styles.codeContainer}>
+  {code.map((digit, index) => (
+    <input
+      key={index}
+      id={`code-${index}`}
+      value={digit}
+      maxLength={1}
+      onChange={(e) => handleCodeChange(e.target.value, index)}
+      onKeyDown={(e) => handleKeyDown(e, index)}
+      style={styles.codeBox}
+    />
+  ))}
+</div>
 
-        <button style={styles.confirmButton}>Confirm</button>
+
+        <button style={styles.confirmButton}onClick={handleConfirm}>Confirm</button>
       </div>
     );
   }

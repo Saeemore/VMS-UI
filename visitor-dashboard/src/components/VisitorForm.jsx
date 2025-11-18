@@ -5,29 +5,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Search, Check, Camera, Upload, Calendar } from 'lucide-react';
 import '../styles/visitorForm.css'; // <- local page CSS (applies only to this page)
 import api from '../api/api';
-// Mock API client (replace with your real client)
-// const api = {
-//   get: async (url) => {
-//     if (url.includes('/public/hosts/')) {
-//       return {
-//         data: [
-//           { _id: '1', name: 'John Smith', department: 'Solution Design Team', role: 'Manager' },
-//           { _id: '2', name: 'Jane Doe', department: 'Marketing', role: 'Specialist' },
-//           { _id: '3', name: 'Peter Jones', department: 'Engineering', role: 'Developer' },
-//           { _id: '4', name: 'Susan Lee', department: 'Human Resources', role: 'Coordinator' },
-//           { _id: '5', name: 'Mike Brown', department: 'Solution Design Team', role: 'Architect' },
-//           { _id: '6', name: 'Emily White', department: 'Engineering', role: 'QA Tester' },
-//         ]
-//       }
-//     }
-//     return { data: {} };
-//   },
-//   post: async (url, formData) => {
-//     console.log('Mock POST:', url);
-//     for (let [k, v] of formData.entries()) console.log(k, v);
-//     return { data: { message: 'ok' } };
-//   }
-// };
+
 
 const dataURLtoBlob = (dataurl) => {
   if (!dataurl) return null;
@@ -40,27 +18,31 @@ const dataURLtoBlob = (dataurl) => {
   return new Blob([u8], { type: mime });
 };
 
-function ProgressStepper({ step }) {
-  const steps = [];
+const Stepper = ({ currentStep }) => {
+  const steps = [1, 2, 3, 4];
   return (
-    <div className="stepper" aria-hidden>
-      {steps.map((s, i) => {
-        const done = s < step;
-        const active = s === step;
-        return (
-          <React.Fragment key={s}>
-            <div className={`dot ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
-              {done ? <Check size={18} /> : s}
+    <div className="flex items-center justify-center w-full max-w-xs mx-auto mb-8">
+      {steps.map((step, index) => (
+        <React.Fragment key={step}>
+          <div className="flex flex-col items-center">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+                ${currentStep > step ? 'bg-white text-blue-600' : ''}
+                ${currentStep === step ? 'bg-white text-blue-600 ring-4 ring-white/50' : ''}
+                ${currentStep < step ? 'bg-blue-400 border-2 border-blue-300 text-white' : ''}
+              `}
+            >
+              {currentStep > step ? <Check size={18} /> : step}
             </div>
-            {i < steps.length - 1 && (
-              <div className={`stepper-line ${done ? 'active' : ''}`} />
-            )}
-          </React.Fragment>
-        )
-      })}
+          </div>
+          {index < steps.length - 1 && (
+            <div className={`flex-1 h-1 transition-all duration-300 ${currentStep > step ? 'bg-white' : 'bg-blue-400'}`}></div>
+          )}
+        </React.Fragment>
+      ))}
     </div>
-  )
-}
+  );
+};
 
 /* --- Steps --- */
 const Step1 = ({ formData, setFormData, scheduledAt, setScheduledAt, onNext }) => {
@@ -299,13 +281,16 @@ export default function VisitorForm() {
 
   return (
     <div className="visitor-page">
-      <div className="visitor-container">
-        <ProgressStepper step={step} />
+       <Stepper currentStep={step} />
+      <div className="visitor-container" style={{backgroundColor:'white'}}>
+      
+       
         {step === 1 && <Step1 formData={formData} setFormData={setFormData} scheduledAt={scheduledAt} setScheduledAt={setScheduledAt} onNext={handleNext} />}
         {step === 2 && <Step2 formData={formData} setFormData={setFormData} onNext={handleNext} onBack={handleBack} />}
         {step === 3 && <Step3 formData={formData} setFormData={setFormData} companyId={companyId} onNext={handleNext} onBack={handleBack} />}
         {step === 4 && <Step4 uploadedSelfie={uploadedSelfie} setUploadedSelfie={setUploadedSelfie} capturedImage={capturedImage} setCapturedImage={setCapturedImage} onSubmit={handleSubmit} onBack={handleBack} isSubmitting={mutation.isLoading} />}
       </div>
-    </div>
+      </div>
+    
   );
 }
