@@ -18,27 +18,31 @@ const dataURLtoBlob = (dataurl) => {
   return new Blob([u8], { type: mime });
 };
 
-function ProgressStepper({ step }) {
-  const steps = [];
+const Stepper = ({ currentStep }) => {
+  const steps = [1, 2, 3, 4];
   return (
-    <div className="stepper" aria-hidden>
-      {steps.map((s, i) => {
-        const done = s < step;
-        const active = s === step;
-        return (
-          <React.Fragment key={s}>
-            <div className={`dot ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
-              {done ? <Check size={18} /> : s}
+    <div className="flex items-center justify-center w-full max-w-xs mx-auto mb-8">
+      {steps.map((step, index) => (
+        <React.Fragment key={step}>
+          <div className="flex flex-col items-center">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+                ${currentStep > step ? 'bg-white text-blue-600' : ''}
+                ${currentStep === step ? 'bg-white text-blue-600 ring-4 ring-white/50' : ''}
+                ${currentStep < step ? 'bg-blue-400 border-2 border-blue-300 text-white' : ''}
+              `}
+            >
+              {currentStep > step ? <Check size={18} /> : step}
             </div>
-            {i < steps.length - 1 && (
-              <div className={`stepper-line ${done ? 'active' : ''}`} />
-            )}
-          </React.Fragment>
-        )
-      })}
+          </div>
+          {index < steps.length - 1 && (
+            <div className={`flex-1 h-1 transition-all duration-300 ${currentStep > step ? 'bg-white' : 'bg-blue-400'}`}></div>
+          )}
+        </React.Fragment>
+      ))}
     </div>
-  )
-}
+  );
+};
 
 /* --- Steps --- */
 const Step1 = ({ formData, setFormData, scheduledAt, setScheduledAt, onNext }) => {
@@ -277,13 +281,16 @@ export default function VisitorForm() {
 
   return (
     <div className="visitor-page">
-      <div className="visitor-container">
-        <ProgressStepper step={step} />
+       <Stepper currentStep={step} />
+      <div className="visitor-container" style={{backgroundColor:'white'}}>
+      
+       
         {step === 1 && <Step1 formData={formData} setFormData={setFormData} scheduledAt={scheduledAt} setScheduledAt={setScheduledAt} onNext={handleNext} />}
         {step === 2 && <Step2 formData={formData} setFormData={setFormData} onNext={handleNext} onBack={handleBack} />}
         {step === 3 && <Step3 formData={formData} setFormData={setFormData} companyId={companyId} onNext={handleNext} onBack={handleBack} />}
         {step === 4 && <Step4 uploadedSelfie={uploadedSelfie} setUploadedSelfie={setUploadedSelfie} capturedImage={capturedImage} setCapturedImage={setCapturedImage} onSubmit={handleSubmit} onBack={handleBack} isSubmitting={mutation.isLoading} />}
       </div>
-    </div>
+      </div>
+    
   );
 }

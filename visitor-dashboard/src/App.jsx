@@ -26,6 +26,7 @@ import { useAuth } from "./hooks/useAuth.jsx";
 import Spinner from "./components/common/Spinner.jsx";
 import { Navigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import VisitorForm from "./components/VisitorForm.jsx";
 // ProtectedRoute remains the same
 const ProtectedRoute = ({ roles }) => {
     const { user, loading } = useAuth();
@@ -51,7 +52,7 @@ export default function App() {
         <Routes>
    {/* Public Routes */}
       <Route path="/" element={<Landing/>} />
-      <Route path="/:companyId/Register" element={<RegisterPage />} />
+      <Route path="/:companyId/Register" element={<VisitorForm />} />
 
       <Route path="/pass/:passCode" element={<DigitalPass />} />
       <Route path="/login" element={<Login />} />

@@ -16,6 +16,7 @@
 .visitor-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background: var(--blue-gradient);
@@ -27,6 +28,7 @@
 /* MAIN CONTAINER */
 .visitor-container {
   background: var(--bg-white);
+  background-color: #ffffff;
   width: 100%;
   max-width: 680px;
   border-radius: 24px;
