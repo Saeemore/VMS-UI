@@ -37,10 +37,9 @@
   position: relative;
   overflow: hidden;
   transition: var(--transition);
-  
 }
 
-/* STEPPER */
+/* OLD STEPPER (will not be used, kept untouched) */
 .stepper {
   display: flex;
   justify-content: center;
@@ -291,5 +290,92 @@
   }
   .upload-section {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===========================================================
+   NEW EBAY-STYLE MODERN STEPPER (ADDED WITHOUT REMOVING OLD)
+=========================================================== */
+
+.stepper-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.stepper-track {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  justify-content: space-between;
+  position: relative;
+}
+
+.step-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.step-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: 3px solid #d1d5db;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 5;
+  transition: var(--transition);
+}
+
+.step-circle.active,
+.step-circle.done {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.step-line {
+  position: absolute;
+  top: 17px;
+  left: 50%;
+  width: 100%;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.step-line.active {
+  background: var(--accent);
+}
+
+.step-label {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--gray-mid);
+  transition: var(--transition);
+}
+
+.step-label.active-label {
+  color: var(--gray-dark);
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .stepper-track {
+    gap: 10px;
+  }
+  .step-wrapper {
+    flex: none;
   }
 }
