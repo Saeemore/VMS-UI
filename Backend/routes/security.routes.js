@@ -8,7 +8,8 @@ const {
     checkOut,
     createWalkInVisit,
     getTodaysCheckedOut,
-    getExpectedVisits
+    getExpectedVisits,
+    validateVisit
 } = require('../controllers/security.controller');
 
 // All routes in this file are protected and for security only
@@ -18,7 +19,7 @@ router.get('/checked-in', getCheckedInVisits);
 router.post('/check-in', checkIn);
 router.patch('/check-out/:id', checkOut);
 router.post('/walk-in', createWalkInVisit);
-
+router.post('/validate',validateVisit);
 router.get('/expected', getExpectedVisits);
 
 router.get('/checked-out-today', getTodaysCheckedOut);

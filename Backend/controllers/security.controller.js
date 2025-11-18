@@ -6,52 +6,122 @@ const User = require('../models/user.model');
 const Notification = require('../models/notification.model');
 const AuditLog = require('../models/auditLog.model');
 const { startOfToday, endOfToday } = require('date-fns');
-// Get all visitors currently checked in
-exports.getCheckedInVisits = async (req, res) => {
+
+/*  
+===========================================================
+  1) VALIDATE PASS (QR or Manual Code)
+===========================================================
+*/
+exports.validateVisit = async (req, res) => {
     try {
-        const visits = await Visit.find({ company: req.user.company, status: 'CHECKED_IN' }).sort({ checkin_time: -1 }).populate('visitor', 'name selfie')
-        .populate('host', 'name department');;
-        res.json(visits);
+        const { pass } = req.body;
+
+        if (!pass) {
+            return res.status(400).json({ message: "Pass code is required." });
+        }
+
+        const visit = await Visit.findOne({
+            pass_code: pass,
+            company: req.user.company
+        })
+            .populate('visitor', 'name selfie phone email')
+            .populate('host', 'name department')
+            .populate('company', 'name');
+
+        // No pass found
+        if (!visit) {
+            return res.status(404).json({
+                message: "Invalid pass, or visit is not approved/scheduled for your company."
+            });
+        }
+
+        // Visit must be APPROVED or SCHEDULED
+        if (!["APPROVED", "SCHEDULED"].includes(visit.status)) {
+            return res.status(400).json({
+                message: "Visit is not approved or already processed."
+            });
+        }
+
+        // Must be scheduled for TODAY
+        const today = new Date().toDateString();
+        const visitDay = new Date(visit.scheduled_at).toDateString();
+        if (today !== visitDay) {
+            return res.status(400).json({
+                message: "Visit is not scheduled for today."
+            });
+        }
+
+        // Already checked-in
+        if (visit.status === "CHECKED_IN") {
+            return res.status(400).json({
+                message: "Visitor already checked in."
+            });
+        }
+
+        // Validation success
+        return res.json({
+            success: true,
+            visit
+        });
+
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        return res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
-// Check-in a visitor using their pass code
+/*  
+===========================================================
+  2) CHECK-IN VISITOR
+===========================================================
+*/
 exports.checkIn = async (req, res) => {
     const { pass_code } = req.body;
+
     try {
         const visit = await Visit.findOneAndUpdate(
-            { pass_code, company: req.user.company, status: { $in: ['APPROVED', 'SCHEDULED'] } },
+            {
+                pass_code,
+                company: req.user.company,
+                status: { $in: ['APPROVED', 'SCHEDULED'] }
+            },
             { status: 'CHECKED_IN', checkin_time: new Date() },
             { new: true }
         );
-        if (!visit) return res.status(404).json({ message: 'Invalid pass, or visit is not approved/scheduled for your company.' });
 
-        // Notify the host that their visitor has arrived
-         await Notification.create({
-                sender: req.user._id, // The security guard is the sender
-                recipients: [{ user: visit.host }], // Send to the host
-                message: `${visit.visitorName} has checked in to see you.`,
-                visit: visit._id,
-                type: 'VISITOR_CHECKED_IN'
+        if (!visit)
+            return res.status(404).json({
+                message: 'Invalid pass, or visit is not approved/scheduled for your company.'
             });
 
-        // Create an audit log
+        // Notify host
+        await Notification.create({
+            sender: req.user._id,
+            recipients: [{ user: visit.host }],
+            message: `${visit.visitorName} has checked in to see you.`,
+            visit: visit._id,
+            type: 'VISITOR_CHECKED_IN'
+        });
+
+        // Audit log
         await AuditLog.create({
             actor: req.user._id,
             action: 'VISIT_CHECKED_IN',
             details: `Security ${req.user.name} checked in ${visit.visitorName}.`,
             visit: visit._id
         });
-        
+
         res.json({ message: 'Visitor checked in successfully.', visit });
+
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-// Check-out a visitor by their visit ID
+/*  
+===========================================================
+  3) CHECK-OUT VISITOR
+===========================================================
+*/
 exports.checkOut = async (req, res) => {
     try {
         const visit = await Visit.findOneAndUpdate(
@@ -59,11 +129,15 @@ exports.checkOut = async (req, res) => {
             { status: 'CHECKED_OUT', checkout_time: new Date() },
             { new: true }
         );
-        if (!visit) return res.status(404).json({ message: 'Visit not found or visitor is not checked in.' });
-        
-         await Notification.create({
-            sender: req.user._id, // The security guard is the sender
-            recipients: [{ user: visit.host }], // Send to the host
+
+        if (!visit)
+            return res.status(404).json({
+                message: 'Visit not found or visitor is not checked in.'
+            });
+
+        await Notification.create({
+            sender: req.user._id,
+            recipients: [{ user: visit.host }],
             message: `${visit.visitorName} has checked out.`,
             visit: visit._id,
             type: 'VISITOR_CHECKED_OUT'
@@ -75,84 +149,67 @@ exports.checkOut = async (req, res) => {
             details: `Security ${req.user.name} checked out ${visit.visitorName}.`,
             visit: visit._id
         });
-        
+
         res.json({ message: 'Visitor checked out successfully.', visit });
+
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-// Manually create a pass for a walk-in visitor
-exports.createWalkInVisit = async (req, res) => {
-    try {
-        const { name, email, phone, organization, purpose, host_id } = req.body;
-         if (!name || !email || !phone || !purpose || !host_id) {
-            return res.status(400).json({ message: "Please fill all required fields." });
-        }
-
-        const host = await User.findById(host_id);
-        if (!host || host.role !== 'host') {
-            return res.status(404).json({ message: 'Host not found' });
-        }
-
-        const visitor = await Visitor.findOneAndUpdate(
-            { email }, 
-            { $set: { name, email, phone, organization } },
-            { new: true, upsert: true, runValidators: true }
-        );
-        
-        const newVisit = new Visit({
-            purpose,
-            visitor: visitor._id,
-            host: host._id,
-            company: req.user.company,
-            visitorName: visitor.name,
-            hostName: host.name,
-            status: 'AWAITING_APPROVAL', // Still needs host approval
-            createdBy: req.user._id,
-        });
-
-        await newVisit.save();
-
-        await Notification.create({
-            user: host._id,
-            message: `A walk-in visit for ${visitor.name} was created by security and needs your approval.`,
-            visit: newVisit._id,
-            type: 'NEW_REQUEST'
-        });
-
-        await AuditLog.create({
-            actor: req.user._id,
-            action: 'WALK_IN_CREATED',
-            details: `Security ${req.user.name} created a walk-in request for ${visitor.name} to meet ${host.name}.`,
-            visit: newVisit._id
-        });
-
-        res.status(201).json({ message: 'Walk-in visit created. Awaiting host approval.', visit: newVisit });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
+/*  
+===========================================================
+  4) EXPECTED VISITS (TODAY)
+===========================================================
+*/
 exports.getExpectedVisits = async (req, res) => {
     try {
         const todayStart = startOfToday();
         const todayEnd = endOfToday();
+
         const visits = await Visit.find({
             status: { $in: ['APPROVED', 'SCHEDULED'] },
-            scheduled_at: { $gte: todayStart, $lte: todayEnd }
+            scheduled_at: { $gte: todayStart, $lte: todayEnd },
+            company: req.user.company
         })
-        .sort({ scheduled_at: 1 })
-        .populate('visitor', 'name selfie')
-        .populate('host', 'name department');
+            .sort({ scheduled_at: 1 })
+            .populate('visitor', 'name selfie')
+            .populate('host', 'name department');
+
         res.json(visits);
+
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
+/*  
+===========================================================
+  5) GET CHECKED-IN VISITORS
+===========================================================
+*/
+exports.getCheckedInVisits = async (req, res) => {
+    try {
+        const visits = await Visit.find({
+            company: req.user.company,
+            status: 'CHECKED_IN'
+        })
+            .sort({ checkin_time: -1 })
+            .populate('visitor', 'name selfie')
+            .populate('host', 'name department');
+
+        res.json(visits);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+/*  
+===========================================================
+  6) GET TODAY'S CHECKED-OUT VISITORS
+===========================================================
+*/
 exports.getTodaysCheckedOut = async (req, res) => {
     try {
         const todayStart = startOfToday();
@@ -160,16 +217,15 @@ exports.getTodaysCheckedOut = async (req, res) => {
 
         const visits = await Visit.find({
             status: 'CHECKED_OUT',
-            checkout_time: {
-                $gte: todayStart,
-                $lte: todayEnd
-            }
+            checkout_time: { $gte: todayStart, $lte: todayEnd },
+            company: req.user.company
         })
-        .sort({ checkout_time: -1 }) // Show most recent first
-        .populate('visitor', 'name selfie')
-        .populate('host', 'name department');
+            .sort({ checkout_time: -1 })
+            .populate('visitor', 'name selfie')
+            .populate('host', 'name department');
 
         res.json(visits);
+
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
