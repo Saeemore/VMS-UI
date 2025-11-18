@@ -102,7 +102,24 @@ body{
 .activities-card{background:#fff;padding:0 0 ;box-shadow:0 4px 6px rgba(0,0,0,.1);border: 1px solid #47455533;}
 
 
-.activities-cards-header{display:flex;justify-content:space-between;width:100%;height: 56px;margin-bottom:24px;padding-right: 0px;padding-left: 24px;border-bottom:2px #47455533 solid ;align-items: center;}
+.activities-header {
+  /* The Border */
+  border-bottom: 3px solid #cfd1d5; /* Light gray color to match the other card */
+  
+  /* Spacing */
+  padding-bottom: 16px;  /* Space inside the header (above the line) */
+  margin-bottom: 16px;   /* Space outside the header (pushes content down) */
+  
+  /* Layout specifics */
+  width: 100%;
+  display: flex;
+  align-items: center;   /* Vertically centers the text */
+}
+
+/* Optional: Reset default h3 margins so it sits perfectly */
+.activities-header h3 {
+  margin: 0;
+}
 
 
 .activities-cards-title{font-weight:500;font-size:16px;color:#000000;font:500 roboto;}
@@ -1336,7 +1353,49 @@ font:400 inter; font-weight: 400;font-size: 14px;}
   letter-spacing: 0.3px;
 } */
 
+/* 1. The Container: Keeps the menu attached to the button */
+.user-menu-container {
+  position: relative;
+  display: inline-block;
+  min-width: 100%; /* Ensures it doesn't shrink smaller than the content */
+}
 
+/* 2. The Dropdown Box: Puts it below the button */
+.vd-dropdown-menu {
+  position: absolute;
+  top: 110%;       /* Moves it slightly down from the button */
+  left: 0;         /* Aligns left edge */
+  right: 0;        /* Aligns right edge - forcing full width */
+  width: 100%;     /* MATCHES PARENT WIDTH EXACTLY */
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 100;
+}
+
+/* 3. The Logout Button: This centers the text and icon */
+.vd-logout-item {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* <--- THIS IS THE KEY LINE FOR CENTERING */
+  gap: 5px;
+  width: 40%;             /* Forces button to take full width of dropdown */
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: #0d0d0d;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.vd-logout-item:hover {
+  background-color: #f0e8e8;
+}
 
 
 

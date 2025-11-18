@@ -27,6 +27,7 @@ export default function Activities() {
     <div className="activities-card">
       <div className="activities-header">
         <h3>Activities</h3>
+        
       </div>
       <div className="activities-body">
         {loading ? (

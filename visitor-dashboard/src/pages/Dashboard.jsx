@@ -127,11 +127,10 @@ import "../styles/Dashboard.css";
 import HeaderStats from "../components/HeaderStats";
 import Activities from "../components/Activities";
 import VisitorHistory from "../components/VisitorHistory";
-import DepartmentVisits from "../components/DepartmentVisits";
 import Header from "../components/Header";
 import { useDrawer } from "../hooks/useDrawer";
 import api from "../api/api"; // <-- axios wrapper
-
+import DepartmerntVisits from "../components/DepartmentVisits";
 const activitiesData = [
   { text: "Ridiculus tempus vitae lectus blandit vulputate dolor integer natoque augue.", timeAgo: "7 days ago", icon: "💬" },
   { text: "Scelerisque ultrices tellus tellus sed mattis egestas purus ut vel.", timeAgo: "7 days ago", icon: "👤" },
@@ -318,7 +317,7 @@ const Dashboard = ({ pageType = "dashboard" }) => {
         />
         <div className="side-by-side">
           <Activities activitiesData={activitiesData} />
-          <DepartmentVisits />
+        <DepartmerntVisits/>
         </div>
       </div>
     </>

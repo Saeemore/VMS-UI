@@ -3,10 +3,8 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { useDrawer } from "../hooks/useDrawer";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";   // ← ADD THIS
-
-
+import { useContext, useState } from "react"; // <--- Added useState here
+import { useNavigate } from "react-router-dom"; 
 
 const Header = ({
   onSearch,
@@ -14,23 +12,28 @@ const Header = ({
   showSearch = false,
   pageTitle,
   pageSubtitle,
-  hostName = "John", // <-- Inject from parent or context
+  hostName = "John", 
 }) => {
+  // --- ADDED THESE DEFINITIONS TO FIX THE ERRORS ---
+  const navigate = useNavigate();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  // ------------------------------------------------
+
   const { pathname } = useLocation();
   const { open } = useDrawer();
 
   const isHost = pathname.startsWith("/host") || pathname.startsWith("/security");
-  const isHostDashboard = pathname === "/host/dashboard" || pathname === "/security/dashboard"  ;
-   const { user,logout } = useContext(AuthContext); 
+  const isHostDashboard = pathname === "/host/dashboard" || pathname === "/security/dashboard";
+  const { user, logout } = useContext(AuthContext); 
 
-   if (!user) {
-  return null; // prevents crash on refresh
-}
+  if (!user) {
+    return null; // prevents crash on refresh
+  }
 
   // Determine title  
   let title = pageTitle;
   let subtitle = pageSubtitle;
-  // console.log(user)
+
   if (!pageTitle) {
     if (isHostDashboard) {
       title = `Hello, ${(user.name).split(" ")[0]}`;
@@ -99,53 +102,59 @@ const Header = ({
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         </button>
-        <button
-  className="vd-logout"
-  type="button"
-  aria-label="Logout"
-  onClick={() => {
-    logout();
-    navigate("/login");
-  }}
-  style={{
-    marginLeft: "10px",
-    background: "#fff",
-    border: "1px solid #ddd",
-    padding: "6px 10px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "6px"
-  }}
->
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth="2"
-    fill="none"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" y1="12" x2="9" y2="12" />
-  </svg>
-  <span style={{ fontSize: "14px" }}></span>
-</button>
 
+        {/* User Dropdown Menu Section */}
+        <div className="user-menu-container" style={{ position: "relative" }}>
+          <button 
+            className={`vd-user ${isUserMenuOpen ? 'active' : ''}`} 
+            type="button" 
+            aria-label="Account"
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+          >
+            <span className="vd-avatar">
+               <img 
+                  src={user?.image || `https://ui-avatars.com/api/?name=${user?.name}`} 
+                  alt={user?.name} 
+                  style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+               />
+            </span>
+            <span className="vd-user-meta">
+              <span className="vd-user-name">{user?.name}</span>
+              <span className="vd-user-role">{user?.role}</span>
+            </span>
+            <svg 
+              className="vd-caret" 
+              width="18" height="18" viewBox="0 0 24 24" 
+              fill="none" stroke="currentColor" strokeWidth="1.8" 
+              aria-hidden="true"
+              style={{ transform: isUserMenuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
 
-        <button className="vd-user" type="button" aria-label="Account">
-          <span className="vd-avatar" aria-hidden="true" />
-          <span className="vd-user-meta">
-            <span className="vd-user-name">{user?.name}</span>
-            <span className="vd-user-role">{user?.role}</span>
+          {/* Dropdown Menu */}
+          {isUserMenuOpen && (
+            <div className="vd-dropdown-menu">
+              <button
+                className="vd-logout-item"
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Sign out</span>
+              </button>
+            </div>
+          )}
+        </div>
 
-          </span>
-          <svg className="vd-caret" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </button>
       </div>
     </header>
   );
