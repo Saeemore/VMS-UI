@@ -1,3 +1,67 @@
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mv-search-box {
+  position: relative;
+  background: #f3f4f6;
+  display: flex;
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  width: 260px;
+  border: 1px solid #e5e7eb;
+}
+
+.mv-search-box input {
+  border: none;
+  background: transparent;
+  /* margin-left: 10px; */
+  width: 100%;
+  outline: none;
+  font-size: 0.95rem;
+  /* color: #555; */
+}
+
+/* Search icon color */
+.mv-search-icon {
+  position:absolute; 
+  right:14px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+
+.add-new-btn {
+  background: #2563eb; /* Same blue as screenshot */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  height: 40px;
+}
+
+.add-new-btn:hover {
+  background: #1d4ed8;
+}
+
+.add-new-btn svg {
+  /* color: white; */
+  width: 18px;
+  height: 18px;
+  stroke: white;
+}
+
 .status-badge {
   padding: 4px 10px;
   border-radius: 12px;
@@ -6,14 +70,34 @@
   font-weight: 500;
 }
 
+.status-badge.scheduled {
+  background: #e7e9ff;
+  color: #3c41c9;
+}
+
+.status-badge.awaiting-approval {
+  background: #fff2d9;
+  color: #c27100;
+}
+
+.status-badge.cancelled {
+  background: #ffe8d9;
+  color: #b34100;
+}
+
+.status-badge.missed {
+  background: #fbe4ff;
+  color: #8a1fbf;
+}
+
 .status-badge.checked-in {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #dff5fc;
+  color: #067b8a;
 }
 
 .status-badge.checked-out {
-  background: #f3f4f6;
-  color: #374151;
+  background: #f1f1f4;
+  color: #555;
 }
 
 .status-badge.pending {
@@ -22,13 +106,13 @@
 }
 
 .status-badge.approved {
-  background: #d1fae5;
-  color: #065f46;
+  background: #e4f7e9;
+  color: #1a7f37;
 }
 
 .status-badge.rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #ffe5e7;
+  color: #c62828;
 }
 
 .visitor-avatar {
@@ -81,6 +165,13 @@
   .manage-visitors-page .visitors-table th:nth-child(5),
   .manage-visitors-page .visitors-table td:nth-child(5) { display: none; } /* Checkout */
 }
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-width: 95%;
+  }
+}
+
 
 .modal-overlay {
   position: fixed;
@@ -98,8 +189,8 @@
 
 .modal-content {
   background: #fff;
-  width: 95%;
-  max-width: 500px;
+  width: 90%;
+  max-width: 800px;
   border-radius: 12px;
   padding: 20px;
   position: relative;
@@ -108,3 +199,79 @@
   animation: modalFade 0.25s ease-out;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }     
+
+/* =========================================================
+   CLEAN TABLE COLUMN SPACING (Keeps 3-dot menu aligned)
+   ========================================================= */
+
+/* Make table distribute columns evenly */
+.visitors-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;  /* important */
+}
+
+/* Header & Row cells */
+.visitors-table th,
+.visitors-table td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.95rem;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Slightly bigger first column for avatar + text */
+.visitors-table th:nth-child(1),
+.visitors-table td:nth-child(1) {
+  width: 26%;
+}
+
+/* Visiting column */
+.visitors-table th:nth-child(2),
+.visitors-table td:nth-child(2) {
+  width: 18%;
+}
+
+/* Purpose column */
+.visitors-table th:nth-child(3),
+.visitors-table td:nth-child(3) {
+  width: 15%;
+}
+
+/* Check-in column */
+.visitors-table th:nth-child(4),
+.visitors-table td:nth-child(4) {
+  width: 16%;
+}
+
+/* Check-out column */
+.visitors-table th:nth-child(5),
+.visitors-table td:nth-child(5) {
+  width: 16%;
+}
+
+/* Status column */
+.visitors-table th:nth-child(6),
+.visitors-table td:nth-child(6) {
+  width: 13%;
+}
+
+/* Row menu (3 dots) stays tightly at end */
+.row-menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
+/* Action column (3 dots menu) */
+.visitors-table th:last-child,
+.visitors-table td:last-child {
+  width: 50px;        /* enough for 3 dots */
+  text-align: center; /* keep dots centered */
+  overflow: visible;  /* allow popup to show */
+}

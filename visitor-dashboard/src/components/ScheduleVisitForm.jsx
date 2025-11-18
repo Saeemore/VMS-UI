@@ -19,28 +19,46 @@ const dataURLtoBlob = (dataurl) => {
 
 /* ---------------------- Progress Stepper ---------------------- */
 function ProgressStepper({ step }) {
-  const steps = [1, 2];
+  const steps = [
+    { id: 1, label: "Details" },
+    { id: 2, label: "Verification" }
+  ];
+
   return (
-    <div className="stepper">
-      {steps.map((s, i) => {
-        const done = s < step;
-        const active = s === step;
+    <div className="stepper-container">
+      <div className="stepper-track">
+        {steps.map((s, i) => {
+          const done = s.id < step;
+          const active = s.id === step;
 
-        return (
-          <React.Fragment key={s}>
-            <div className={`dot ${done ? "done" : ""} ${active ? "active" : ""}`}>
-              {done ? <Check size={18} /> : s}
+          return (
+            <div className="step-wrapper" key={s.id}>
+              {/* Circle */}
+              <div
+                className={`step-circle ${done ? "done" : ""} ${
+                  active ? "active" : ""
+                }`}
+              >
+                {done ? <Check size={16} /> : s.id}
+              </div>
+
+              {/* Connector line */}
+              {i < steps.length - 1 && (
+                <div className={`step-line ${done ? "active" : ""}`} />
+              )}
+
+              {/* Label */}
+              <span className={`step-label ${active ? "active-label" : ""}`}>
+                {s.label}
+              </span>
             </div>
-
-            {i < steps.length - 1 && (
-              <div className={`stepper-line ${done ? "active" : ""}`} />
-            )}
-          </React.Fragment>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
+
 
 /* ---------------------- Step 1: Details + Purpose ---------------------- */
 const Step1Combined = ({ formData, setFormData, scheduledAt, setScheduledAt, onNext }) => {
@@ -99,16 +117,6 @@ const Step1Combined = ({ formData, setFormData, scheduledAt, setScheduledAt, onN
           value={fmt(scheduledAt)}
           min={fmt(new Date())}
           onChange={(e) => setScheduledAt(new Date(e.target.value))}
-        />
-        <Calendar
-          size={20}
-          style={{
-            position: "absolute",
-            right: 12,
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "#9CA3AF",
-          }}
         />
       </div>
 
@@ -270,7 +278,7 @@ const Step3 = ({
 };
 
 /* ---------------------- MAIN COMPONENT ---------------------- */
-export default function ScheduleVisitForm({ isModal = false }) {
+export default function ScheduleVisitForm({ isModal = false, onSuccess }) {
   const { companyId } = useParams();
 
   const [step, setStep] = useState(1);
@@ -289,7 +297,10 @@ export default function ScheduleVisitForm({ isModal = false }) {
 
   const mutation = useMutation({
     mutationFn: (fd) => api.post("/host/schedule", fd),
-    onSuccess: () => alert("Visit scheduled successfully!"),
+    onSuccess: () => {
+      alert("Visit scheduled successfully!");
+      if (onSuccess) onSuccess();
+    },
     onError: () => alert("Failed to schedule visit."),
   });
 
