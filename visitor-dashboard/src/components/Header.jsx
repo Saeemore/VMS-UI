@@ -21,7 +21,7 @@ const Header = ({
 
   const { pathname } = useLocation();
   const { open } = useDrawer();
-  const {navigate} =useNavigate();
+  // const {navigate} =useNavigate();
   const isHost = pathname.startsWith("/host") || pathname.startsWith("/security");
   const isHostDashboard = pathname === "/host/dashboard" || pathname === "/security/dashboard";
   const { user, logout } = useContext(AuthContext); 

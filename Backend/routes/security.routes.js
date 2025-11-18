@@ -6,7 +6,7 @@ const {
     getCheckedInVisits,
     checkIn,
     checkOut,
-    createWalkInVisit,
+    // createWalkInVisit,
     getTodaysCheckedOut,
     getExpectedVisits,
     validateVisit
@@ -18,7 +18,7 @@ router.use(protect, authorize('security'));
 router.get('/checked-in', getCheckedInVisits);
 router.post('/check-in', checkIn);
 router.patch('/check-out/:id', checkOut);
-router.post('/walk-in', createWalkInVisit);
+// router.post('/walk-in', createWalkInVisit);
 router.post('/validate',validateVisit);
 router.get('/expected', getExpectedVisits);
 

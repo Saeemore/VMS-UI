@@ -22,9 +22,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const role = user?.role || "";              // HOST / SECURITY / ADMIN
   const isHost = role === "host";
 
-  const isSecurityModule =
-    location.pathname.startsWith("/security") ||
-    location.pathname === "/scan-pass";
+const isSecurity = role === "security";
+const isSecurityModule =
+  isSecurity &&
+  (location.pathname.startsWith("/security") ||
+    location.pathname === "/scan-pass" ||
+    location.pathname === "/settings"); // keep menu on settings
+
 
   return (
     <div
@@ -85,7 +89,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             <>
               <li>
                 <NavLink
-                  to="/security"
+                  to="/security/dashboard"
                   className={({ isActive }) =>
                     `nav-item${isActive ? " active" : ""}`
                   }
