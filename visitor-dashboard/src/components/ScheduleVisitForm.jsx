@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import api from "../api/api";
 import "../styles/visitorForm.css";
-
+import {useCustomToast} from "../context/CustomToastContext";
 /* Convert webcam image to file */
 const dataURLtoBlob = (dataurl) => {
   if (!dataurl) return null;
@@ -278,8 +278,11 @@ const Step3 = ({
 };
 
 /* ---------------------- MAIN COMPONENT ---------------------- */
-export default function ScheduleVisitForm({ isModal = false, onSuccess }) {
+export default function ScheduleVisitForm({ isModal = false, onSuccess, setExternalLoading }) {
   const { companyId } = useParams();
+
+  const { showSuccessToast, showErrorToast } = useCustomToast();
+
 
   const [step, setStep] = useState(1);
 
@@ -296,19 +299,27 @@ export default function ScheduleVisitForm({ isModal = false, onSuccess }) {
   const [uploadedSelfie, setUploadedSelfie] = useState(null);
 
   const mutation = useMutation({
-    mutationFn: (fd) => api.post("/host/schedule", fd),
+    mutationFn: (fd) => {
+      setExternalLoading(true);
+      return api.post("/host/schedule", fd);
+    },
     onSuccess: () => {
-      alert("Visit scheduled successfully!");
+      setExternalLoading(false);
+      showSuccessToast("Visit scheduled successfully!");
       if (onSuccess) onSuccess();
     },
-    onError: () => alert("Failed to schedule visit."),
+    onError: (err) =>{
+      setExternalLoading(false);
+       showErrorToast("Failed to schedule visit.");
+       console.error("Schedule error:", err);
+    },
   });
 
   const next = () => {
     if (!formData.name || !formData.email || !formData.phone)
-      return alert("Please fill name, email, phone.");
+      return showErrorToast("Please fill name, email, phone.");
     if (!formData.purpose)
-      return alert("Please select purpose.");
+      return showErrorToast("Please select purpose.");
 
     setStep(2);
   };
@@ -323,36 +334,37 @@ export default function ScheduleVisitForm({ isModal = false, onSuccess }) {
       fd.append("selfie", uploadedSelfie);
     else if (capturedImage)
       fd.append("selfie", dataURLtoBlob(capturedImage), "selfie.png");
-    else return alert("Please upload or capture a selfie.");
+    
 
     mutation.mutate(fd);
   };
 
   return (
-    <div style={{ width: "100%", padding: "10px" }}>
-      <ProgressStepper step={step} />
+  <div style={{ width: "100%", padding: "10px" }}>
+    <ProgressStepper step={step} />
 
-      {step === 1 && (
-        <Step1Combined
-          formData={formData}
-          setFormData={setFormData}
-          scheduledAt={scheduledAt}
-          setScheduledAt={setScheduledAt}
-          onNext={next}
-        />
-      )}
+    {step === 1 && (
+      <Step1Combined
+        formData={formData}
+        setFormData={setFormData}
+        scheduledAt={scheduledAt}
+        setScheduledAt={setScheduledAt}
+        onNext={next}
+      />
+    )}
 
-      {step === 2 && (
-        <Step3
-          uploadedSelfie={uploadedSelfie}
-          setUploadedSelfie={setUploadedSelfie}
-          capturedImage={capturedImage}
-          setCapturedImage={setCapturedImage}
-          onBack={() => setStep(1)}
-          onSubmit={submit}
-          isSubmitting={mutation.isLoading}
-        />
-      )}
-    </div>
-  );
+    {step === 2 && (
+      <Step3
+        uploadedSelfie={uploadedSelfie}
+        setUploadedSelfie={setUploadedSelfie}
+        capturedImage={capturedImage}
+        setCapturedImage={setCapturedImage}
+        onBack={() => setStep(1)}
+        onSubmit={submit}
+        isSubmitting={mutation.isLoading}
+      />
+    )}
+  </div>
+);
+
 }

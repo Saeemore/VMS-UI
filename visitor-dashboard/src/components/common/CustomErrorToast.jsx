@@ -15,7 +15,7 @@ const CustomErrorToast = ({ isOpen, message, onClose }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-50 font-sans"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-6 z-50 font-sans"
           onClick={onClose}
         >
           <motion.div
@@ -23,6 +23,7 @@ const CustomErrorToast = ({ isOpen, message, onClose }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+            style={{backgroundColor:"white"}}
             className="bg-white rounded-2xl shadow-2xl w-full max-w-sm text-center p-8 flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >

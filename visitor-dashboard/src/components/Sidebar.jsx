@@ -153,7 +153,7 @@ const isSecurityModule =
       </nav>
 
       {/* SETTINGS — visible for ALL logged-in users */}
-      <div className="mt-auto px-2 pb-4">
+      <div className="mt-auto p-0 pb-4">
         
         <NavLink
           to="/settings"

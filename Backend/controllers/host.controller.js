@@ -153,13 +153,17 @@ exports.scheduleVisit = async (req, res) => {
         }
         
         const visitorData = { name, email, phone, organization };
-        if (req.files && req.files.selfie) {
+        if (req.files && req.files.selfie && req.files.selfie.length > 0) {
+            try{
             const resizedSelfieBuffer = await sharp(req.files.selfie[0].buffer)
                 .resize({ width: 150, height: 150, fit: 'cover' })
                 .png()
                 .toBuffer();
 
             visitorData.selfie = { data: resizedSelfieBuffer, contentType: 'image/png' };
+            } catch (err){
+                console.error("selfie processing error:", err);
+            }
         }
         if (req.files && req.files.aadhar) {
             visitorData.aadhar = { data: req.files.aadhar[0].buffer, contentType: req.files.aadhar[0].mimetype };

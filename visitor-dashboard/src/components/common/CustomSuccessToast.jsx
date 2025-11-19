@@ -14,7 +14,7 @@ const CustomSuccessToast = ({ isOpen, message, onClose }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/60 flex items-center justify-center p-6 z-50 font-sans backdrop-blur-sm"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-6 z-50 font-sans"
           onClick={onClose}
         >
           <motion.div
@@ -22,10 +22,13 @@ const CustomSuccessToast = ({ isOpen, message, onClose }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-            className="bg-white rounded-2xl shadow-3xl w-full max-w-sm text-center p-8 flex flex-col items-center"
+            style={{backgroundColor:"white"}}
+            className="bg-white bg-opacity-100 backdrop-blur-none rounded-2xl shadow-xl border border-gray-200 w-full max-w-sm text-center p-8 flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="scale-150">
+          
+
+            <div className="scale-150 p-4 bg-white rounded-full shadow relative z-10">
               <Player
                 autoplay
                 loop={false}
@@ -35,12 +38,12 @@ const CustomSuccessToast = ({ isOpen, message, onClose }) => {
               />
             </div>
             
-            <h2 className="text-3xl font-bold text-gray-800 mt-4">Success!</h2>
-            <p className="text-gray-600 mt-2 text-base">{message}</p>
+            <h2 className="text-3xl font-bold text-gray-800 mt-4 relative z-10">Success!</h2>
+            <p className="text-gray-600 mt-2 text-base relative z-10">{message}</p>
             
             <button
               onClick={onClose}
-              className="mt-8 w-full bg-gradient-success text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="mt-8 w-full bg-gradient-success text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md relative z-10"
             >
               OK
             </button>

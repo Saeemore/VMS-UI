@@ -37,6 +37,8 @@ export default function ManageVisitors() {
   const [loading, setLoading] = useState(true);
   const [vw, setVw] = useState(getViewportFlags());
   const [showScheduleForm, setShowScheduleForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // listen to resize to toggle responsive columns
   useEffect(() => {
@@ -248,10 +250,19 @@ export default function ManageVisitors() {
               setShowScheduleForm(false);
               fetchVisitors();
             }}
+            setExternalLoading={setIsLoading}
             />
           </div>
         </div>
       )}
+  {isLoading && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999999]">
+    <div className="bg-white rounded-2xl shadow-xl px-6 py-6 flex flex-col items-center gap-4">
+      <div className="loader"></div>
+      <p className="text-gray-800 font-medium mt-2">Submitting your visit…</p>
+    </div>
+  </div>
+)}
 
     </div>
   );
