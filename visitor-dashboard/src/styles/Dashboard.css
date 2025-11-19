@@ -1650,3 +1650,23 @@ img, svg, canvas { max-width: 100%; height: auto; }
 @media (max-width: 360px){
   .stats-grid{ grid-template-columns: 1fr !important; }
 }
+
+
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.85; transform: scale(1); }
+}
+
+@keyframes glow {
+  0% { opacity: 0.4; width: 60px; }
+  50% { opacity: 1; width: 76px; }
+  100% { opacity: 0.4; width: 60px; }
+}
+

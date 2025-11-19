@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
-import api from "../../src/api/api";  // 👈 FIXED IMPORT
-
+import api from "../../src/api/api";  // 👈 FIXED IMPOR
+import Lottie from "lottie-react";
+// import scanningAnimation from "../assets/lottie/scanAnimation.json";
 export default function ScanPass() {
   const [step, setStep] = useState("loading");
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -80,29 +81,82 @@ export default function ScanPass() {
 
   // ------------------- UI SCREENS --------------------
 
-  if (step === "loading") {
-    return (
-      <div style={styles.centerScreen}>
-        <img src="/loading-icon.svg" alt="loading" style={{ width: 80 }} />
-        <button onClick={() => setStep("scan")} style={styles.startBtn}>
-          Start Scanning
-        </button>
+  // if (step === "loading") {
+  //   return (
+  //     <div style={styles.centerScreen}>
+  //       <img src="/loading-icon.svg" alt="loading" style={{ width: 80 }} />
+  //       <button onClick={() => setStep("scan")} style={styles.startBtn}>
+  //         Start Scanning
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
+
+
+if (step === "loading") {
+  return (
+    <div style={styles.centerScreen}>
+
+      {/* 🔵 SCANNING ANIMATION ICON */}
+      <div style={styles.scanningAnimationContainer}>
+        <img
+          src="../../assets/scan-doc-icon.png"
+          alt=""
+          style={styles.scanningAnimationIcon}
+        />
+        <div style={styles.scanningUnderline}></div>
       </div>
-    );
-  }
+
+      {/* Start Button */}
+      <button onClick={() => setStep("scan")} style={styles.startBtn}>
+        Start Scanning
+      </button>
+    </div>
+  );
+}
+
+
  
-  if (step === "scan") {
-    return (
-      <div style={styles.scanPage}>
-        <div style={styles.scanFrame}>
-          <div id="qr-reader" style={styles.reader}></div>
-        </div>
-        <p style={styles.instruction}>
-          Place the visitor's QR code in front of the camera.
-        </p>
+  // if (step === "scan") {
+  //   return (
+  //     <div style={styles.scanPage}>
+  //       <div style={styles.scanFrame}>
+  //         <div id="qr-reader" style={styles.reader}></div>
+  //       </div>
+  //       <p style={styles.instruction}>
+  //         Place the visitor's QR code in front of the camera.
+  //       </p>
+  //     </div>
+  //   );
+  // }
+
+if (step === "scan") {
+  return (
+    <div style={styles.scanPage}>
+
+      {/* 🔵 SCANNING ANIMATION ICON HERE */}
+      <div style={styles.scanningAnimationContainer}>
+        <img
+          src="/scan-doc-icon.png"
+          alt="Scanning..."
+          style={styles.scanningAnimationIcon}
+        />
+        <div style={styles.scanningUnderline}></div>
       </div>
-    );
-  }
+
+      {/* QR FRAME */}
+      <div style={styles.scanFrame}>
+        <div id="qr-reader" style={styles.reader}></div>
+      </div>
+
+      <p style={styles.instruction}>
+        Place the visitor's QR code in front of the camera.
+      </p>
+    </div>
+  );
+}
+
 
   if (step === "fail") {
     return (
@@ -357,6 +411,58 @@ successText: {
   color: "#000000",
   maxWidth: 400,
   lineHeight: "146%",
+},
+
+scanningAnimationContainer: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  marginBottom: 25,
+  animation: "bounce 1.6s infinite ease-in-out",
+},
+
+scanningAnimationIcon: {
+  width: "150px",
+  height: "150px",
+  objectFit: "contain",
+  filter: "drop-shadow(0px 0px 10px rgba(0,118,255,0.25))",
+  animation: "pulse 1.8s infinite ease-in-out",
+},
+
+scanningUnderline: {
+  width: 70,
+  height: 4,
+  backgroundColor: "#1E63FF",
+  borderRadius: 10,
+  marginTop: 8,
+  animation: "glow 1.8s infinite ease-in-out",
+},
+
+scanningAnimationContainer: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  marginBottom: 25,
+  animation: "bounce 1.6s infinite ease-in-out",
+},
+
+scanningAnimationIcon: {
+  width: 150,
+  height: 150,
+  objectFit: "contain",
+  filter: "drop-shadow(0px 0px 10px rgba(0,118,255,0.25))",
+  animation: "pulse 1.8s infinite ease-in-out",
+},
+
+scanningUnderline: {
+  width: 70,
+  height: 4,
+  backgroundColor: "#1E63FF",
+  borderRadius: 10,
+  marginTop: 8,
+  animation: "glow 1.8s infinite ease-in-out",
 },
 
 
